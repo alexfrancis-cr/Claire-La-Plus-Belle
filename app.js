@@ -128,7 +128,7 @@
         el(
           "div",
           { class: "info" },
-          el("h3", {}, info.titre),
+          el("h4", {}, info.titre),
           el("p", {}, info.texte),
           info.photoCachee ? cachette(info.photoCachee) : null,
         ),
@@ -230,7 +230,9 @@
 
   // ---------- Le parcours en étapes ----------
 
-  const ETAPES = ["jeu", "programme", "infos", "reponse"];
+  // Les étapes 0 (accès) et 1 (la lettre) sont des écrans à part ;
+  // celles-ci sont les pages du site, une par écran.
+  const ETAPES = ["mariage", "jeu", "invites"];
 
   function nomEtape(etape) {
     return document.querySelector(`#etapes [data-aller="${etape}"] .etapes__nom`).textContent;
@@ -253,13 +255,15 @@
     const suivante = ETAPES[rang + 1];
     $("etape-precedente").hidden = !precedente;
     $("etape-suivante").hidden = !suivante;
-    if (suivante) $("etape-suivante").textContent = `Suivant : ${nomEtape(suivante)} →`;
+    // À l'étape du jeu, on doit pouvoir passer sans avoir cherché.
+    if (suivante) $("etape-suivante").textContent = etape === "jeu" ? "Passer le jeu →" : `Suivant : ${nomEtape(suivante)} →`;
 
+    // Chaque étape est une page : on repart du haut de l'écran.
+    window.scrollTo({ top: 0, behavior: "auto" });
     if (options.focus) {
       const titre = document.querySelector(`.etape[data-etape="${etape}"] .titre-section`);
       titre.setAttribute("tabindex", "-1");
       titre.focus({ preventScroll: true });
-      $("etapes").scrollIntoView({ behavior: sansAnimation ? "auto" : "smooth", block: "start" });
     }
   }
 
@@ -294,35 +298,67 @@
     montrer("merci", dejaRepondu);
     if (dejaRepondu) $("merci-texte").textContent = "Nous avons bien votre réponse. Vous pouvez la modifier.";
 
-    allerA("jeu", { focus: false });
-    montrer("section-code", false);
+    allerA("mariage", { focus: false });
     montrer("contenu-invite", true);
   }
 
-  // ---------- Chargement par code ----------
+  // ---------- Étape 0 : accès restreint ----------
+
+  function accesRefuse(message) {
+    const acces = $("acces");
+    $("acces-statut").textContent = "Accès refusé";
+    $("erreur-code").textContent = message;
+    acces.classList.remove("acces--refus");
+    void acces.offsetWidth; // relance l'animation à chaque refus
+    acces.classList.add("acces--refus");
+    $("champ-code").focus();
+    $("champ-code").select();
+  }
+
+  function accesAutorise(foyer) {
+    const prenoms = foyer.personnes.map((personne) => personne.prenom).filter(Boolean);
+    const acces = $("acces");
+    acces.classList.remove("acces--refus");
+    acces.classList.add("acces--ok");
+    $("acces-statut").textContent = "Accès autorisé";
+    $("erreur-code").textContent = "";
+    $("acces-bienvenue").textContent = prenoms.length ? `Bienvenue ${joindre(prenoms)} !` : "Bienvenue !";
+    const passerALaLettre = () => {
+      acces.hidden = true;
+      montrer("ouverture", true);
+      $("sceau").focus({ preventScroll: true });
+    };
+    // Le temps de lire « Bienvenue » et de voir le cadenas s'ouvrir.
+    if (sansAnimation) passerALaLettre();
+    else {
+      window.setTimeout(() => acces.classList.add("acces--sortie"), 1400);
+      window.setTimeout(passerALaLettre, 1900);
+    }
+  }
 
   async function ouvrir(code) {
     codeCourant = code;
+    const bouton = $("bouton-acces");
+    bouton.disabled = true;
+    bouton.textContent = "Vérification…";
     $("erreur-code").textContent = "";
-    montrer("chargement", true);
     try {
       const resultat = await chargerFoyer(code);
       if (!resultat.ok) {
-        montrer("section-code", true);
-        $("champ-code").value = code;
-        $("erreur-code").textContent =
+        accesRefuse(
           resultat.erreur === "code_inconnu"
             ? "Ce code ne correspond à aucune invitation. Vérifiez-le, ou écrivez-nous."
-            : "Impossible d'ouvrir cette invitation pour le moment. Réessayez dans un instant.";
+            : "Impossible d'ouvrir cette invitation pour le moment. Réessayez dans un instant.",
+        );
         return;
       }
       afficherFoyer(resultat.foyer);
+      accesAutorise(resultat.foyer);
     } catch {
-      montrer("section-code", true);
-      $("champ-code").value = code;
-      $("erreur-code").textContent = "Impossible de joindre le serveur. Vérifiez votre connexion et réessayez.";
+      accesRefuse("Impossible de joindre le serveur. Vérifiez votre connexion et réessayez.");
     } finally {
-      montrer("chargement", false);
+      bouton.disabled = false;
+      bouton.textContent = "Entrer";
     }
   }
 
@@ -330,7 +366,7 @@
     evenement.preventDefault();
     const code = normaliserCode($("champ-code").value);
     if (!code) {
-      $("erreur-code").textContent = "Entrez le code reçu avec votre invitation.";
+      accesRefuse("Entrez le code reçu avec votre invitation.");
       return;
     }
     const url = new URL(window.location.href);
@@ -651,12 +687,7 @@
       document.body.classList.remove("enveloppe-fermee");
       $("site").inert = false;
       ouverture.hidden = true;
-      if ($("section-code").hidden) {
-        $("accueil").setAttribute("tabindex", "-1");
-        $("accueil").focus({ preventScroll: true });
-      } else {
-        $("champ-code").focus({ preventScroll: true });
-      }
+      allerA("mariage");
     };
     // Durée totale de l'animation (rabat, lettre, fondu) : voir styles.css.
     if (sansAnimation) reveler();
@@ -692,7 +723,9 @@
     else window.setTimeout(ouvrirLettre, 800);
   });
 
+  // Le lien personnel pré-remplit le code ; l'invité valide lui-même l'accès.
+  montrer("acces-demo", modeDemo);
   const codeUrl = normaliserCode(new URLSearchParams(window.location.search).get("code"));
-  if (codeUrl) ouvrir(codeUrl);
-  else montrer("section-code", true);
+  if (codeUrl) $("champ-code").value = codeUrl;
+  $("champ-code").focus({ preventScroll: true });
 })();

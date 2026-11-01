@@ -62,9 +62,56 @@ body {
   line-height: 1.65;
 }
 
-main {
+/* ---------- Une page plein écran par étape ---------- */
+.pages {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100svh;
+}
+
+.pages[hidden] {
+  display: none;
+}
+
+.barre,
+.page,
+.pied {
   width: min(100% - 2rem, var(--largeur));
-  margin: 0 auto 4rem;
+  margin: 0 auto;
+}
+
+.barre {
+  padding-top: 1.25rem;
+  text-align: center;
+}
+
+.barre__noms {
+  margin: 0;
+  font-family: var(--police-script);
+  font-size: 1.6rem;
+  line-height: 1.2;
+}
+
+.barre__invite {
+  margin: 0.15rem 0 0;
+  font-family: var(--police-titre);
+  font-style: italic;
+  font-size: 1.125rem;
+  color: var(--encre-douce);
+}
+
+.page {
+  flex: 1;
+  padding-bottom: 1rem;
+}
+
+.sous-section {
+  margin: 2.5rem 0 1rem;
+  font-family: var(--police-titre);
+  font-weight: 500;
+  font-size: 1.625rem;
+  text-align: center;
 }
 
 .visually-hidden {
@@ -80,7 +127,7 @@ main {
 /* ---------- En-tête ---------- */
 .hero {
   text-align: center;
-  padding: 3.5rem 1rem 2.5rem;
+  padding: 1.5rem 0 2rem;
 }
 
 .branche {
@@ -152,16 +199,7 @@ main {
   box-shadow: 0 1px 0 rgba(61, 58, 51, 0.04);
 }
 
-.carte--code {
-  text-align: center;
-}
 
-.carte--code h2 {
-  font-family: var(--police-titre);
-  font-weight: 500;
-  font-size: 1.875rem;
-  margin: 0 0 0.5rem;
-}
 
 .titre-section {
   font-family: var(--police-titre);
@@ -190,13 +228,12 @@ main {
   margin: 0 0 2rem;
 }
 
-.accueil {
-  text-align: center;
-  font-family: var(--police-titre);
+.sous-titre--note {
+  margin-top: -1.25rem;
+  font-size: 0.9375rem;
   font-style: italic;
-  font-size: 1.5rem;
-  margin: 1rem 0 0;
 }
+
 
 .bandeau-demo {
   margin: 0 0 1rem;
@@ -208,10 +245,6 @@ main {
   color: var(--terracotta-fonce);
 }
 
-.chargement {
-  text-align: center;
-  color: var(--encre-douce);
-}
 
 /* ---------- Programme ---------- */
 .evenements {
@@ -279,7 +312,7 @@ main {
   border-radius: 0 var(--rayon) var(--rayon) 0;
 }
 
-.info h3 {
+.info h4 {
   margin: 0 0 0.35rem;
   font-family: var(--police-titre);
   font-weight: 600;
@@ -325,22 +358,8 @@ button:focus-visible,
   outline-offset: 2px;
 }
 
-.form-code {
-  max-width: 24rem;
-  margin: 1.5rem auto 0;
-  text-align: left;
-}
 
-.form-code__ligne {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 0.4rem;
-}
 
-.form-code__ligne input {
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-}
 
 .personne {
   border: 0;
@@ -502,7 +521,11 @@ button:focus-visible,
 /* ---------- Pied ---------- */
 .pied {
   text-align: center;
-  padding: 1rem 1rem 3rem;
+  padding: 0 0 1.5rem;
+}
+
+.pied__texte {
+  margin: 0.25rem 0 0;
   font-family: var(--police-titre);
   font-style: italic;
   font-size: 1.125rem;
@@ -849,11 +872,17 @@ body.enveloppe-fermee {
   appearance: none;
 }
 
-/* La fenêtre ronde de la grange : centre (200, 74), rayon 13 dans un dessin de 400 × 200. */
+/*
+ * Les zones sont bien plus grandes que ce qu'elles cachent (environ 48 px,
+ * la taille d'une cible au doigt) : on doit pouvoir tomber dessus sans viser
+ * au pixel près.
+ */
+
+/* La fenêtre ronde de la grange : centre (200, 74) dans un dessin de 400 × 200. */
 .cachette--fenetre {
   left: 50%;
   top: 37%;
-  width: 6.5%;
+  width: max(3rem, 14%);
   aspect-ratio: 1;
 }
 
@@ -871,7 +900,7 @@ body.enveloppe-fermee {
 .cachette--baie {
   left: 85.8%;
   top: 40%;
-  width: 1.5rem;
+  width: 3rem;
   aspect-ratio: 1;
 }
 
@@ -882,9 +911,9 @@ body.enveloppe-fermee {
 
 .cachette--info {
   left: auto;
-  right: 0.25rem;
-  top: 0.25rem;
-  width: 1.5rem;
+  right: 0;
+  top: 0;
+  width: 3rem;
   aspect-ratio: 1;
   transform: none;
 }
@@ -1116,8 +1145,8 @@ body.enveloppe-fermee {
 .etapes ol {
   position: relative;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  margin: 2rem 0 0;
+  grid-template-columns: repeat(5, 1fr);
+  margin: 1.25rem 0 0;
   padding: 0;
   list-style: none;
 }
@@ -1127,8 +1156,8 @@ body.enveloppe-fermee {
   content: "";
   position: absolute;
   top: 1.05rem;
-  left: 12.5%;
-  right: 12.5%;
+  left: 10%;
+  right: 10%;
   height: 1px;
   background: var(--trait);
 }
@@ -1158,7 +1187,13 @@ body.enveloppe-fermee {
   background: var(--creme);
   font-family: var(--police-titre);
   font-size: 1.125rem;
+  font-variant-numeric: lining-nums; /* 0 et 1 lisibles, pas « o » et « I » */
   transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.etapes button:disabled {
+  cursor: default;
+  opacity: 0.85;
 }
 
 .etapes button.faite .etapes__numero {
@@ -1196,7 +1231,7 @@ body.enveloppe-fermee {
   display: flex;
   justify-content: space-between;
   gap: 0.75rem;
-  margin: 2rem 0 0;
+  margin: 1.5rem 0 1rem;
 }
 
 .navigation-etapes .bouton[hidden] {
@@ -1222,5 +1257,172 @@ body.enveloppe-fermee {
 @media (prefers-reduced-motion: reduce) {
   .etape {
     animation: none;
+  }
+}
+
+/* ---------- Étape 0 : accès restreint ---------- */
+.acces {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  overflow-y: auto;
+  background: radial-gradient(circle at 50% 25%, #4d5c43, #232a20 72%);
+  color: var(--creme);
+  transition: opacity 0.5s ease;
+}
+
+.acces[hidden] {
+  display: none;
+}
+
+.acces--sortie {
+  opacity: 0;
+}
+
+.acces__carte {
+  width: min(24rem, 100%);
+  padding: 2.25rem 1.75rem 1.75rem;
+  border: 1px solid rgba(247, 241, 230, 0.18);
+  border-radius: var(--rayon);
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.6);
+  text-align: center;
+}
+
+.acces--refus .acces__carte {
+  animation: secousse 0.45s ease-in-out;
+}
+
+.acces__cadenas {
+  display: block;
+  width: 3rem;
+  height: 3.5rem;
+  margin: 0 auto 1rem;
+  overflow: visible;
+  color: var(--creme);
+  transition: color 0.3s;
+}
+
+.acces__anse,
+.acces__corps {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+
+.acces__corps {
+  fill: rgba(247, 241, 230, 0.1);
+}
+
+.acces__anse {
+  transition: transform 0.5s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+
+circle.acces__serrure {
+  fill: currentColor;
+}
+
+path.acces__serrure {
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+
+.acces__surtitre {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: #e6a77f;
+  transition: color 0.3s;
+}
+
+.acces__titre {
+  margin: 0.4rem 0 0.75rem;
+  font-family: var(--police-titre);
+  font-size: 2rem;
+  line-height: 1.15;
+}
+
+.acces__texte {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: rgba(247, 241, 230, 0.75);
+}
+
+.acces .acces__champ {
+  margin: 1.5rem 0 0.75rem;
+  padding: 0.8rem;
+  border: 1px solid rgba(247, 241, 230, 0.3);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.25);
+  color: var(--creme);
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 1.5rem;
+  letter-spacing: 0.35em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.acces .acces__champ::placeholder {
+  color: rgba(247, 241, 230, 0.3);
+}
+
+.acces .acces__champ:focus-visible {
+  outline: 2px solid #e6a77f;
+  outline-offset: 2px;
+}
+
+.acces__bouton {
+  background: var(--terracotta);
+}
+
+.acces__bouton:hover {
+  background: var(--terracotta-fonce);
+}
+
+.acces .acces__erreur {
+  margin-top: 0.75rem;
+  color: #f2b29a;
+}
+
+.acces__bienvenue {
+  margin: 0.5rem 0 0;
+  font-family: var(--police-script);
+  font-size: 2.1rem;
+  line-height: 1.2;
+}
+
+.acces__bienvenue:empty {
+  display: none;
+}
+
+.acces__demo {
+  margin: 1rem 0 0;
+  font-size: 0.8125rem;
+  color: rgba(247, 241, 230, 0.55);
+}
+
+/* Accès autorisé : le cadenas s'ouvre et passe au vert sauge. */
+.acces--ok .acces__cadenas,
+.acces--ok .acces__surtitre {
+  color: #b4cfa3;
+}
+
+.acces--ok .acces__anse {
+  transform: translateY(-7px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acces,
+  .acces__anse,
+  .acces--refus .acces__carte {
+    transition: none !important;
+    animation: none !important;
   }
 }

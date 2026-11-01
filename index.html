@@ -67,8 +67,41 @@
       </symbol>
     </svg>
 
-    <!-- La lettre : premier écran. Le reste du site est inerte tant qu'elle est fermée. -->
-    <div class="ouverture" id="ouverture">
+    <!-- Étape 0 : accès restreint. Le code identifie le foyer : on sait qui répond. -->
+    <div class="acces" id="acces">
+      <form class="acces__carte" id="form-code" novalidate>
+        <svg class="acces__cadenas" viewBox="0 0 48 56" aria-hidden="true">
+          <path class="acces__anse" d="M14 24 V16 a10 10 0 0 1 20 0 V24" />
+          <rect class="acces__corps" x="6" y="24" width="36" height="28" rx="5" />
+          <circle class="acces__serrure" cx="24" cy="36" r="3.5" />
+          <path class="acces__serrure" d="M24 38 v6" />
+        </svg>
+        <p class="acces__surtitre" id="acces-statut">Accès restreint</p>
+        <p class="acces__titre">Invitation personnelle</p>
+        <p class="acces__texte">
+          Ce site est réservé aux invités de Claire la plus belle et Alex. Entrez le code reçu avec votre invitation.
+        </p>
+        <label class="visually-hidden" for="champ-code">Code d'invitation</label>
+        <input
+          id="champ-code"
+          name="code"
+          class="acces__champ"
+          autocomplete="off"
+          autocapitalize="characters"
+          spellcheck="false"
+          maxlength="12"
+          placeholder="CODE"
+          required
+        />
+        <button type="submit" class="bouton bouton--large acces__bouton" id="bouton-acces">Entrer</button>
+        <p class="message-erreur acces__erreur" id="erreur-code" role="alert"></p>
+        <p class="acces__bienvenue" id="acces-bienvenue" role="status"></p>
+        <p class="acces__demo" id="acces-demo" hidden>Mode démo : essayez le code DEMODEUX ou DEMOMARI.</p>
+      </form>
+    </div>
+
+    <!-- Étape 1 : la lettre. Le reste du site est inerte tant qu'elle est fermée. -->
+    <div class="ouverture" id="ouverture" hidden>
       <svg class="grange grange--ouverture" aria-hidden="true"><use href="#grange" /></svg>
       <div class="enveloppe" id="enveloppe">
         <div class="enveloppe__dos"></div>
@@ -110,87 +143,68 @@
       <p class="ouverture__aide" id="ouverture-aide" role="status">Touchez le sceau pour ouvrir</p>
     </div>
 
-    <div id="site" inert>
-      <header class="hero">
-        <svg class="branche branche--haut" aria-hidden="true"><use href="#branche" /></svg>
-        <p class="hero__surtitre">Nous nous marions</p>
-        <h1 class="hero__noms">
-          <span id="nom-mariee">Claire la plus belle</span>
-          <span class="hero__et" aria-hidden="true">&amp;</span>
-          <span class="visually-hidden">et</span>
-          <span id="nom-marie">Alex</span>
-        </h1>
-        <p class="hero__dates" id="hero-dates"></p>
-        <p class="hero__lieu" id="hero-lieu">Hossegor</p>
-        <svg class="branche branche--bas" aria-hidden="true"><use href="#branche" /></svg>
-        <div class="grange-cadre">
-          <svg class="grange grange--fond" aria-hidden="true"><use href="#grange" /></svg>
-          <button type="button" class="cachette cachette--fenetre" data-photo="1" tabindex="-1" aria-hidden="true"></button>
-        </div>
-      </header>
-
-      <main>
-        <p class="bandeau-demo" id="bandeau-demo" hidden>Mode démo : les réponses ne sont envoyées nulle part.</p>
-
-        <!-- Sans code : on demande le code reçu avec l'invitation. -->
-        <section class="carte carte--code" id="section-code" hidden aria-labelledby="titre-code">
-          <h2 id="titre-code">Votre invitation</h2>
-          <p>Entrez le code reçu avec votre invitation pour découvrir le programme et nous répondre.</p>
-          <form id="form-code" class="form-code" novalidate>
-            <label for="champ-code">Code d'invitation</label>
-            <div class="form-code__ligne">
-              <input
-                id="champ-code"
-                name="code"
-                autocomplete="off"
-                autocapitalize="characters"
-                spellcheck="false"
-                maxlength="12"
-                required
-              />
-              <button type="submit" class="bouton">Valider</button>
-            </div>
-            <p class="message-erreur" id="erreur-code" role="alert"></p>
-          </form>
-        </section>
-
-        <p class="chargement" id="chargement" hidden role="status">Un instant…</p>
-
-        <!-- Avec un code valide : tout le reste, filtré pour ce foyer. -->
-        <!-- Avec un code valide : le parcours en quatre étapes, filtré pour ce foyer. -->
-        <div id="contenu-invite" hidden>
-          <p class="accueil" id="accueil"></p>
-
+    <!-- Étapes 2 à 4 : une page plein écran par étape. -->
+    <div id="site" class="site" inert>
+      <div id="contenu-invite" class="pages" hidden>
+        <header class="barre">
+          <p class="barre__noms"><span id="nom-mariee">Claire la plus belle</span> &amp; <span id="nom-marie">Alex</span></p>
+          <p class="barre__invite" id="accueil"></p>
+          <p class="bandeau-demo" id="bandeau-demo" hidden>Mode démo : les réponses ne sont envoyées nulle part.</p>
           <nav class="etapes" aria-label="Étapes">
             <ol id="etapes">
-              <li><button type="button" data-aller="jeu"><span class="etapes__numero">1</span><span class="etapes__nom">Le jeu</span></button></li>
-              <li><button type="button" data-aller="programme"><span class="etapes__numero">2</span><span class="etapes__nom">Le programme</span></button></li>
-              <li><button type="button" data-aller="infos"><span class="etapes__numero">3</span><span class="etapes__nom">Infos pratiques</span></button></li>
-              <li><button type="button" data-aller="reponse"><span class="etapes__numero">4</span><span class="etapes__nom">Votre réponse</span></button></li>
+              <li><button type="button" class="faite" disabled><span class="etapes__numero">0</span><span class="etapes__nom">Accès</span></button></li>
+              <li><button type="button" class="faite" disabled><span class="etapes__numero">1</span><span class="etapes__nom">La lettre</span></button></li>
+              <li><button type="button" data-aller="mariage"><span class="etapes__numero">2</span><span class="etapes__nom">Le mariage</span></button></li>
+              <li><button type="button" data-aller="jeu"><span class="etapes__numero">3</span><span class="etapes__nom">Le jeu</span></button></li>
+              <li><button type="button" data-aller="invites"><span class="etapes__numero">4</span><span class="etapes__nom">Vos infos</span></button></li>
             </ol>
           </nav>
+        </header>
 
-          <section class="etape" data-etape="jeu" aria-labelledby="titre-jeu">
+        <main class="page">
+          <!-- Étape 2 : le mariage. Le grand en-tête ouvre cette page. -->
+          <section class="etape" data-etape="mariage" aria-labelledby="titre-mariage">
+            <h2 class="titre-section visually-hidden" id="titre-mariage">Le mariage</h2>
+            <div class="hero">
+              <svg class="branche branche--haut" aria-hidden="true"><use href="#branche" /></svg>
+              <p class="hero__surtitre">Nous nous marions</p>
+              <h1 class="hero__noms">
+                <span>Claire la plus belle</span>
+                <span class="hero__et" aria-hidden="true">&amp;</span>
+                <span class="visually-hidden">et</span>
+                <span>Alex</span>
+              </h1>
+              <p class="hero__dates" id="hero-dates"></p>
+              <p class="hero__lieu" id="hero-lieu">Hossegor</p>
+              <svg class="branche branche--bas" aria-hidden="true"><use href="#branche" /></svg>
+              <div class="grange-cadre">
+                <svg class="grange grange--fond" aria-hidden="true"><use href="#grange" /></svg>
+                <button type="button" class="cachette cachette--fenetre" data-photo="1" tabindex="-1" aria-hidden="true"></button>
+              </div>
+            </div>
+            <h3 class="sous-section">Le programme</h3>
+            <div class="evenements" id="liste-evenements"></div>
+            <h3 class="sous-section">Infos pratiques</h3>
+            <div class="infos" id="liste-infos"></div>
+          </section>
+
+          <!-- Étape 3 : le jeu. -->
+          <section class="etape" data-etape="jeu" aria-labelledby="titre-jeu" hidden>
             <h2 class="titre-section" id="titre-jeu">Le jeu</h2>
             <p class="sous-titre">
               Trois photos de Claire sont cachées sur ce site, invisibles. Cliquez partout pour les trouver ! Chaque
               photo trouvée vous inscrit au tirage au sort de son lot.
             </p>
+            <p class="sous-titre sous-titre--note">
+              Pas envie de chercher ? Passez le jeu : les photos restent cachées sur toutes les étapes, vous pourrez
+              tomber dessus plus tard.
+            </p>
             <div class="lots" id="liste-lots"></div>
           </section>
 
-          <section class="etape" data-etape="programme" aria-labelledby="titre-programme" hidden>
-            <h2 class="titre-section" id="titre-programme">Le programme</h2>
-            <div class="evenements" id="liste-evenements"></div>
-          </section>
-
-          <section class="etape" data-etape="infos" aria-labelledby="titre-infos" hidden>
-            <h2 class="titre-section" id="titre-infos">Infos pratiques</h2>
-            <div class="infos" id="liste-infos"></div>
-          </section>
-
-          <section class="etape carte" data-etape="reponse" aria-labelledby="titre-reponse" hidden>
-            <h2 class="titre-section titre-section--carte" id="titre-reponse">Votre réponse</h2>
+          <!-- Étape 4 : les infos des invités, au nom du foyer qui a donné son code. -->
+          <section class="etape carte" data-etape="invites" aria-labelledby="titre-reponse" hidden>
+            <h2 class="titre-section titre-section--carte" id="titre-reponse">Vos infos</h2>
             <p class="sous-titre">Dites-nous qui sera là. Vous pourrez revenir modifier votre réponse avec le même lien.</p>
             <form id="form-reponse" novalidate>
               <div id="personnes"></div>
@@ -207,21 +221,20 @@
               <button type="button" class="bouton bouton--discret" id="bouton-modifier">Modifier ma réponse</button>
             </div>
           </section>
+        </main>
 
+        <footer class="pied">
           <div class="navigation-etapes">
             <button type="button" class="bouton bouton--discret" id="etape-precedente">← Précédent</button>
             <button type="button" class="bouton" id="etape-suivante">Suivant →</button>
           </div>
-        </div>
-      </main>
-
-      <footer class="pied">
-        <div class="branche-cadre">
-          <svg class="branche branche--pied" aria-hidden="true"><use href="#branche" /></svg>
-          <button type="button" class="cachette cachette--baie" data-photo="3" tabindex="-1" aria-hidden="true"></button>
-        </div>
-        <p>Avec tout notre amour, Claire &amp; Alex</p>
-      </footer>
+          <div class="branche-cadre">
+            <svg class="branche branche--pied" aria-hidden="true"><use href="#branche" /></svg>
+            <button type="button" class="cachette cachette--baie" data-photo="3" tabindex="-1" aria-hidden="true"></button>
+          </div>
+          <p class="pied__texte">Avec tout notre amour, Claire &amp; Alex</p>
+        </footer>
+      </div>
     </div>
 
     <div class="victoire" id="victoire" hidden role="dialog" aria-modal="true" aria-labelledby="victoire-titre">
