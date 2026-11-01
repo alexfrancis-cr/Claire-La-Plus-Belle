@@ -1258,7 +1258,7 @@ path.acces__serrure {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: clamp(0.35rem, 1.6vh, 1rem);
+  gap: clamp(0.3rem, 1.4vh, 1rem);
   width: min(100%, 46rem);
   min-height: 100vh;
   min-height: 100svh;
@@ -1407,16 +1407,17 @@ path.acces__serrure {
   grid-template-columns: repeat(3, 1fr);
   gap: 0.6rem;
   width: 100%;
+  margin-top: 0.5rem; /* place pour les étiquettes « Super rare » */
 }
 
 .ecran .lot {
   position: relative;
-  padding: 0.75rem 0.4rem;
-  gap: 0.2rem;
+  padding: 0.7rem 0.35rem 0.55rem;
+  gap: 0.15rem;
 }
 
 .ecran .lot img {
-  height: clamp(3.75rem, 12vh, 8rem);
+  height: clamp(3.25rem, 10.5vh, 8rem);
 }
 
 .ecran .lot__numero {
@@ -1434,7 +1435,7 @@ path.acces__serrure {
 }
 
 .ecran .grange-cadre {
-  width: min(16rem, 70vw, 24vh);
+  width: min(16rem, 70vw, 22vh);
   margin: 0;
 }
 
@@ -1522,3 +1523,228 @@ path.acces__serrure {
 .identite .champ {
   margin-bottom: 1rem;
 }
+
+/* Les lots : une étiquette « Super rare » qui brille. */
+/* À cheval sur le haut de la carte : ne prend aucune hauteur. */
+.lot__rarete {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  background: linear-gradient(110deg, #c0714f 0%, #e6b422 35%, #fff3c4 50%, #e6b422 65%, #c0714f 100%);
+  background-size: 250% 100%;
+  color: #3d2a12;
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  animation: reflet 3s linear infinite;
+}
+
+@keyframes reflet {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -150% 0;
+  }
+}
+
+/* La page secrète : un écran sombre, complice. */
+.ecran--secret {
+  width: 100%;
+  max-width: none;
+  background: radial-gradient(circle at 50% 30%, #4d5c43, #232a20 75%);
+  color: var(--creme);
+}
+
+.secret__surtitre {
+  margin: 0;
+  font-size: 0.8125rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #e6a77f;
+}
+
+.secret__titre {
+  margin: 0.25rem 0 0;
+  font-family: var(--police-script);
+  font-weight: 400;
+  font-size: clamp(2.5rem, 8vh, 3.75rem);
+  line-height: 1.1;
+}
+
+.secret__texte {
+  margin: 0;
+  font-size: 1.125rem;
+}
+
+.secret__code {
+  margin: 0.25rem 0;
+  padding: 0.75rem 1.25rem;
+  border: 1px dashed rgba(247, 241, 230, 0.5);
+  border-radius: 12px;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: clamp(1.5rem, 5vh, 2.25rem);
+  letter-spacing: 0.3em;
+  user-select: all;
+}
+
+.ecran--secret .bouton {
+  margin-top: 0.75rem;
+  background: var(--terracotta);
+  text-decoration: none;
+}
+
+.secret__chut {
+  margin: 0.5rem 0 0;
+  font-style: italic;
+  font-size: 0.875rem;
+  color: rgba(247, 241, 230, 0.6);
+}
+
+.ecran--secret .ecran__suite {
+  color: rgba(247, 241, 230, 0.6);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lot__rarete {
+    animation: none;
+  }
+}
+
+/* ---------- La vieille enveloppe bohème ---------- */
+/* Grain de papier : un bruit SVG posé sur le kraft (pas d'image à charger). */
+:root {
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.35 0 0 0 0 0.25 0 0 0 0 0.12 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)'/%3E%3C/svg%3E");
+  --kraft: #cdb289;
+  --kraft-clair: #dbc39c;
+  --kraft-fonce: #b99a6c;
+  --encre-brune: #5a3f26;
+}
+
+.enveloppe {
+  transform: rotate(-1.5deg);
+}
+
+/* Bords irréguliers sur les parties fixes seulement : sur le rabat, qui
+   tourne, le filtre serait recalculé à chaque image et ferait saccader. */
+.enveloppe__dos,
+.enveloppe__devant {
+  filter: url(#papier-bord);
+  border-radius: 3px;
+}
+
+.enveloppe__dos {
+  background: var(--grain), radial-gradient(ellipse at 30% 70%, rgba(120, 85, 40, 0.18), transparent 55%), var(--kraft-fonce);
+  box-shadow: 0 22px 45px -20px rgba(61, 40, 20, 0.55), 0 2px 4px rgba(61, 40, 20, 0.2);
+}
+
+.enveloppe__devant {
+  /* l'adresse, en bas à gauche comme sur une vraie enveloppe */
+  justify-content: flex-start;
+  padding: 0 0 4% 9%;
+  background:
+    var(--grain),
+    /* deux taches d'eau et un coin bruni */
+    radial-gradient(circle at 18% 78%, rgba(130, 90, 45, 0.18) 0 7%, transparent 14%),
+    radial-gradient(circle at 86% 88%, rgba(130, 90, 45, 0.12) 0 5%, transparent 11%),
+    radial-gradient(ellipse at 0% 100%, rgba(90, 60, 30, 0.28), transparent 35%),
+    /* les plis du devant */
+    linear-gradient(32deg, transparent 49.6%, rgba(70, 45, 20, 0.16) 50%, transparent 50.6%),
+    linear-gradient(-32deg, transparent 49.6%, rgba(70, 45, 20, 0.16) 50%, transparent 50.6%),
+    var(--kraft);
+}
+
+.enveloppe__rabat {
+  /* un contour un peu irrégulier, sans filtre */
+  clip-path: polygon(0 0, 18% 0.6%, 37% 0, 61% 0.8%, 82% 0.2%, 100% 0, 75% 30%, 51.5% 57%, 49% 58.5%, 24% 29%);
+  background:
+    var(--grain),
+    radial-gradient(ellipse at 50% 0%, rgba(255, 245, 220, 0.25), transparent 60%),
+    linear-gradient(180deg, var(--kraft-clair), var(--kraft) 85%, rgba(70, 45, 20, 0.35));
+}
+
+.lettre {
+  background: var(--grain), #f6ecd8;
+  border-color: #e3d2b0;
+}
+
+/* L'adresse, écrite à la main à l'encre brune. */
+.enveloppe__pour {
+  font-family: var(--police-script);
+  font-style: normal;
+  font-size: clamp(1.45rem, 6vw, 1.9rem);
+  color: var(--encre-brune);
+  transform: rotate(-3deg);
+  text-shadow: 0 0 0.5px rgba(90, 63, 38, 0.6);
+}
+
+/* Le sceau de cire : forme irrégulière, relief, une coulure. */
+.sceau {
+  border-radius: 47% 53% 44% 56% / 55% 45% 55% 45%;
+  background: radial-gradient(circle at 38% 32%, #c4553f, #8e2f22 62%, #6e2218);
+  box-shadow:
+    inset 0 0 0 5px rgba(0, 0, 0, 0.12),
+    inset 0 0 0 7px rgba(255, 200, 170, 0.12),
+    inset -3px -4px 8px rgba(0, 0, 0, 0.35),
+    0 4px 8px rgba(61, 30, 20, 0.45);
+  color: rgba(60, 15, 8, 0.55);
+  text-shadow: 0 1px 0 rgba(255, 190, 160, 0.45);
+}
+
+.sceau::after {
+  content: "";
+  position: absolute;
+  left: 62%;
+  bottom: -14%;
+  width: 22%;
+  height: 26%;
+  border-radius: 40% 60% 55% 45% / 45% 45% 55% 55%;
+  background: radial-gradient(circle at 40% 30%, #b44a36, #7c281c);
+  box-shadow: 0 2px 3px rgba(61, 30, 20, 0.35);
+}
+
+/* Le timbre dentelé et le cachet de la poste. */
+.timbre {
+  position: absolute;
+  z-index: 3;
+  right: 6%;
+  top: 30%;
+  width: 13%;
+  aspect-ratio: 40 / 48;
+  padding: 0;
+  transform: rotate(4deg);
+  filter: drop-shadow(0 1px 1px rgba(61, 40, 20, 0.35));
+  /* la dentelure : des demi-cercles creusés tout autour */
+  -webkit-mask: radial-gradient(circle at 50% 50%, #000 66%, transparent 68%) -2px -2px / 5px 5px, linear-gradient(#000, #000) 3px 3px / calc(100% - 6px) calc(100% - 6px) no-repeat;
+  mask: radial-gradient(circle at 50% 50%, #000 66%, transparent 68%) -2px -2px / 5px 5px, linear-gradient(#000, #000) 3px 3px / calc(100% - 6px) calc(100% - 6px) no-repeat;
+  background: #efe1c3;
+}
+
+.timbre svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.cachet {
+  position: absolute;
+  z-index: 3;
+  right: 13%;
+  top: 34%;
+  width: 26%;
+  color: rgba(70, 40, 25, 0.45);
+  transform: rotate(-12deg);
+  pointer-events: none;
+}
+
+.fleurs-sechees {
+  pointer-events: none;
+}
+
+/* À l'ouverture, timbre et cachet suivent le fondu (rien à animer de plus). */

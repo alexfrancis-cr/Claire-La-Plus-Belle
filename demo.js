@@ -4,6 +4,7 @@
 // Tout le monde est invité à la soirée d'arrivée et au mariage.
 // Essayer :  index.html?code=DEMOMARI   un couple
 //            index.html?code=DEMODEUX   un adulte, son +1 et un enfant
+//            index.html?code=DEMOBLAG   la page secrète de la blague
 //            index.html                 sans code : la page d'accès demande le code
 window.DEMO_FOYERS = {
   DEMOMARI: {
@@ -11,6 +12,11 @@ window.DEMO_FOYERS = {
       { id: "D001", prenom: "Octave", nom: "Bellerose", type: "adulte", evenements: ["arrivee", "mariage"] },
       { id: "D002", prenom: "Sidonie", nom: "Bellerose", type: "adulte", evenements: ["arrivee", "mariage"] },
     ],
+  },
+  // La blague, en démo : Gaspard reçoit le code d'Anatole.
+  DEMOBLAG: {
+    personnes: [{ id: "D006", prenom: "Gaspard", nom: "Lierre", type: "adulte", evenements: ["arrivee", "mariage"] }],
+    blague: { code: "DEMODEUX", prenom: "Anatole" },
   },
   DEMODEUX: {
     personnes: [

@@ -54,7 +54,11 @@
       if (!foyer) return { ok: false, erreur: "code_inconnu" };
       return {
         ok: true,
-        foyer: { personnes: foyer.personnes.map((personne) => ({ ...personne, reponse: null })), message: "" },
+        foyer: {
+          personnes: foyer.personnes.map((personne) => ({ ...personne, reponse: null })),
+          message: "",
+          blague: foyer.blague,
+        },
       };
     }
     const url = new URL(config.apiUrl);
@@ -92,14 +96,9 @@
     return "Votre accompagnant·e";
   }
 
-  function afficherEnTete(evenements) {
-    const dates = $("hero-dates");
-    dates.replaceChildren();
-    evenements.forEach((evenement, index) => {
-      if (index > 0) dates.append(el("br"));
-      dates.append(evenement.dateTexte);
-    });
-    if (evenements.length) dates.append(el("br"), config.annee);
+  // Sous vos noms : la période du week-end (« Du vendredi 23 au dimanche 25 juillet 2027 »).
+  function afficherEnTete() {
+    $("hero-dates").replaceChildren(...config.periode.flatMap((ligne, index) => (index ? [el("br"), ligne] : [ligne])));
   }
 
   function afficherProgramme(evenements) {
@@ -227,14 +226,34 @@
     $("message").value = foyer.message || "";
   }
 
+  // ---------- La page secrète ----------
+
+  function afficherBlague(foyer) {
+    const blague = foyer.blague;
+    ETAPES = blague ? ["blague", "mariage", "infos", "jeu", "invites"] : ["mariage", "infos", "jeu", "invites"];
+    if (!blague) return;
+    const prenom = foyer.personnes.map((personne) => personne.prenom).find(Boolean) || "toi";
+    // « de Quentin », mais « d'Anatole » devant une voyelle ou un h.
+    const de = /^[aeiouyhàâäéèêëîïôöûüœ]/i.test(blague.prenom) ? "d'" : "de ";
+    $("titre-blague").textContent = `Tiens ${prenom},`;
+    $("blague-texte").replaceChildren("voici le code ", de, el("strong", {}, blague.prenom), " :");
+    $("blague-code").textContent = blague.code;
+    $("blague-lien").textContent = `Ouvrir l'invitation ${de}${blague.prenom} →`;
+    const url = new URL(window.location.href);
+    url.searchParams.set("code", blague.code);
+    $("blague-lien").href = url.toString();
+  }
+
   // ---------- Le parcours en étapes ----------
 
   // Les étapes 0 (accès) et 1 (la lettre) sont des écrans à part ; ensuite,
   // quatre écrans plein écran. Sur les écrans « au toucher », toucher l'écran
   // fait passer au suivant. Pas sur le jeu (on y clique partout pour chercher)
   // ni sur le formulaire.
-  const ETAPES = ["mariage", "infos", "jeu", "invites"];
-  const AU_TOUCHER = new Set(["mariage", "infos"]);
+  // L'écran secret de la blague s'ajoute en tête, seulement pour les foyers
+  // qui en ont une (voir afficherBlague).
+  let ETAPES = ["mariage", "infos", "jeu", "invites"];
+  const AU_TOUCHER = new Set(["blague", "mariage", "infos"]);
   const INTERACTIF = "a, button, input, select, textarea, label, .cachette";
 
   function etapeCourante() {
@@ -291,10 +310,11 @@
 
     $("accueil").textContent = prenoms.length ? `Bonjour ${joindre(prenoms)} !` : "Bonjour !";
     if (prenoms.length) $("enveloppe-pour").textContent = `Pour ${joindre(prenoms)}`;
-    afficherEnTete(evenements);
+    afficherEnTete();
     afficherProgramme(evenements);
     afficherInfos(evenements);
     afficherLots();
+    afficherBlague(foyer);
     afficherFormulaire(foyer);
 
     const dejaRepondu = foyer.personnes.some((personne) => personne.reponse);
@@ -302,7 +322,7 @@
     montrer("merci", dejaRepondu);
     if (dejaRepondu) $("merci-texte").textContent = "Nous avons bien votre réponse. Vous pouvez la modifier.";
 
-    allerA("mariage", { focus: false });
+    allerA(ETAPES[0], { focus: false });
     montrer("contenu-invite", true);
   }
 
@@ -476,6 +496,7 @@
           "article",
           { class: "lot" },
           el("img", { src: lot.image, alt: lot.nom }),
+          el("p", { class: "lot__rarete" }, config.jeu.rarete),
           el("p", { class: "lot__numero" }, `Lot n° ${index + 1}`),
           el("p", { class: "lot__nom" }, lot.nom),
           el(
@@ -694,7 +715,7 @@
       document.body.classList.remove("enveloppe-fermee");
       $("site").inert = false;
       ouverture.hidden = true;
-      allerA("mariage");
+      allerA(ETAPES[0]);
     };
     if (sansAnimation) {
       reveler();

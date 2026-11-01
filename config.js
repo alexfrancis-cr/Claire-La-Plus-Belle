@@ -3,7 +3,9 @@
 window.MARIAGE = {
   mariee: "Claire la plus belle",
   marie: "Alex",
-  lieu: "Hossegor",
+  lieu: "Angresse",
+  // Affiché sous vos noms, sur le premier écran.
+  periode: ["Du vendredi 23", "au dimanche 25 juillet 2027"],
   annee: "2027",
 
   // Adresse de l'application Google Apps Script (voir apps-script/README.md).
@@ -38,7 +40,7 @@ window.MARIAGE = {
     {
       titre: "Hébergement",
       evenements: ["arrivee", "mariage"],
-      texte: "Nos adresses à Hossegor et aux alentours arrivent bientôt.",
+      texte: "Nos adresses à Angresse et aux alentours arrivent bientôt.",
     },
     {
       titre: "Tenue",
@@ -61,6 +63,8 @@ window.MARIAGE = {
       2: "jeu/claire-2.jpg",
       3: "jeu/claire-3.jpg",
     },
+    // Des boosters super rares : affiché sur chaque carte de lot.
+    rarete: "Super rare ✨",
     lots: [
       { photo: "1", nom: "Booster Pokémon Team Up", image: "jeu/lot-1.jpg" },
       { photo: "2", nom: "Booster Pokémon Générations", image: "jeu/lot-2.png" },
