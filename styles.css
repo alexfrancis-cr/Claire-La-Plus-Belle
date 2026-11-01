@@ -829,8 +829,8 @@ body.enveloppe-fermee {
 }
 
 /*
- * Les zones sont bien plus grandes que ce qu'elles cachent (environ 48 px,
- * la taille d'une cible au doigt) : on doit pouvoir tomber dessus sans viser
+ * Les zones sont bien plus grandes que ce qu'elles cachent (80 px, presque
+ * deux fois la taille d'une cible au doigt) : on doit pouvoir tomber dessus sans viser
  * au pixel près.
  */
 
@@ -838,7 +838,7 @@ body.enveloppe-fermee {
 .cachette--fenetre {
   left: 50%;
   top: 37%;
-  width: max(3rem, 14%);
+  width: 5rem;
   aspect-ratio: 1;
 }
 
@@ -853,7 +853,7 @@ body.enveloppe-fermee {
 .cachette--baie {
   left: 85.8%;
   top: 40%;
-  width: 3rem;
+  width: 5rem;
   aspect-ratio: 1;
 }
 
@@ -1450,7 +1450,7 @@ path.acces__serrure {
   left: auto;
   right: 0;
   top: 0;
-  width: 3rem;
+  width: 5rem;
   aspect-ratio: 1;
   transform: none;
 }
