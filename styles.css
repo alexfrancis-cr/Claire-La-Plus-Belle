@@ -596,12 +596,13 @@ body.enveloppe-fermee {
   gap: 1.5rem;
   padding: 1rem;
   background: var(--creme);
-  transition: opacity 0.7s ease 1.7s, visibility 0s linear 2.4s;
 }
 
-.ouverture.ouverte {
+/* Dernier temps de l'ouverture : fondu avec un léger zoom vers le site. */
+.ouverture.fin {
   opacity: 0;
-  visibility: hidden;
+  transform: scale(1.05);
+  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .grange--ouverture {
@@ -651,7 +652,10 @@ body.enveloppe-fermee {
   border: 1px solid var(--trait);
   border-radius: 4px;
   text-align: center;
-  transition: transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) 0.6s;
+  box-shadow: 0 2px 6px rgba(61, 58, 51, 0.08);
+  will-change: transform;
+  /* La lettre sort quand le rabat a passé la verticale. */
+  transition: transform 0.95s cubic-bezier(0.16, 1, 0.3, 1) 0.42s, box-shadow 0.95s ease 0.42s;
 }
 
 .lettre__noms {
@@ -701,7 +705,10 @@ body.enveloppe-fermee {
   background: #e9dbc1;
   clip-path: polygon(0 0, 100% 0, 50% 58%);
   transform-origin: top center;
-  transition: transform 0.6s ease-in-out, z-index 0s linear 0.3s;
+  backface-visibility: visible;
+  will-change: transform;
+  /* Le rabat passe derrière la lettre au moment où il dépasse la verticale. */
+  transition: transform 0.75s cubic-bezier(0.55, 0, 0.25, 1), z-index 0s linear 0.38s;
 }
 
 .sceau {
@@ -806,24 +813,24 @@ body.enveloppe-fermee {
 .denouee .ficelle__noeud {
   transform: scale(0) rotate(160deg);
   opacity: 0;
-  transition-duration: 0.35s;
+  transition: transform 0.3s cubic-bezier(0.5, 0, 0.75, 0), opacity 0.3s ease;
 }
 
 .denouee .ficelle__brin--h {
   transform: translateX(-120%);
   opacity: 0;
-  transition-delay: 0.2s;
+  transition: transform 0.45s cubic-bezier(0.5, 0, 0.75, 0) 0.1s, opacity 0.45s ease 0.1s;
 }
 
 .denouee .ficelle__brin--v {
   transform: translateY(140%);
   opacity: 0;
-  transition-delay: 0.25s;
+  transition: transform 0.45s cubic-bezier(0.5, 0, 0.75, 0) 0.15s, opacity 0.45s ease 0.15s;
 }
 
 .denouee .ficelle {
   visibility: hidden;
-  transition: visibility 0s linear 0.9s;
+  transition: visibility 0s linear 0.6s;
 }
 
 /* Raté : l'enveloppe proteste. */
@@ -835,7 +842,13 @@ body.enveloppe-fermee {
 .ouverte .sceau,
 .ouverte .ouverture__aide {
   opacity: 0;
+  transform: translate(-50%, -50%) scale(0.6);
   pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.ouverte .ouverture__aide {
+  transform: none;
 }
 
 .ouverte .enveloppe__rabat {
@@ -844,7 +857,22 @@ body.enveloppe-fermee {
 }
 
 .ouverte .lettre {
-  transform: translateY(-62%);
+  transform: translateY(-66%) scale(1.04);
+  box-shadow: 0 18px 40px -16px rgba(61, 58, 51, 0.35);
+}
+
+/* Le site apparaît en douceur derrière le fondu de la lettre. */
+.site.apparait {
+  animation: apparition-site 0.7s ease both;
+}
+
+@keyframes apparition-site {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -853,8 +881,10 @@ body.enveloppe-fermee {
   .enveloppe__rabat,
   .ficelle__brin,
   .ficelle__noeud,
-  .enveloppe.proteste {
+  .enveloppe.proteste,
+  .site.apparait {
     transition: none !important;
+    animation: none !important;
   }
 }
 
@@ -1023,9 +1053,10 @@ body.enveloppe-fermee {
   display: none;
 }
 
-.victoire__feux {
+.feux {
   position: fixed;
   inset: 0;
+  z-index: 60;
   width: 100%;
   height: 100%;
   pointer-events: none;
@@ -1141,84 +1172,7 @@ body.enveloppe-fermee {
   }
 }
 
-/* ---------- Le parcours en étapes ---------- */
-.etapes ol {
-  position: relative;
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  margin: 1.25rem 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-/* Le trait qui relie les étapes, derrière les pastilles. */
-.etapes ol::before {
-  content: "";
-  position: absolute;
-  top: 1.05rem;
-  left: 10%;
-  right: 10%;
-  height: 1px;
-  background: var(--trait);
-}
-
-.etapes button {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.4rem;
-  width: 100%;
-  padding: 0;
-  border: 0;
-  background: none;
-  color: var(--encre-douce);
-  font-size: 0.8125rem;
-  line-height: 1.25;
-}
-
-.etapes__numero {
-  display: grid;
-  place-items: center;
-  width: 2.1rem;
-  height: 2.1rem;
-  border: 1px solid var(--trait);
-  border-radius: 50%;
-  background: var(--creme);
-  font-family: var(--police-titre);
-  font-size: 1.125rem;
-  font-variant-numeric: lining-nums; /* 0 et 1 lisibles, pas « o » et « I » */
-  transition: background 0.2s, color 0.2s, border-color 0.2s;
-}
-
-.etapes button:disabled {
-  cursor: default;
-  opacity: 0.85;
-}
-
-.etapes button.faite .etapes__numero {
-  border-color: var(--sauge);
-  background: var(--sauge);
-  color: #fff;
-}
-
-.etapes button.courante {
-  color: var(--encre);
-  font-weight: 400;
-}
-
-.etapes button.courante .etapes__numero {
-  border-color: var(--terracotta);
-  background: var(--terracotta);
-  color: #fff;
-}
-
-.etapes button:focus-visible {
-  outline: 2px solid var(--sauge);
-  outline-offset: 4px;
-  border-radius: 8px;
-}
-
+/* ---------- Le parcours en pages ---------- */
 .etape {
   animation: entree-etape 0.35s ease both;
 }
@@ -1424,5 +1378,107 @@ path.acces__serrure {
   .acces--refus .acces__carte {
     transition: none !important;
     animation: none !important;
+  }
+}
+
+/* ---------- Ton Pokémon ---------- */
+.pokemon-personne {
+  border: 0;
+  margin: 0 0 2rem;
+  padding: 0;
+}
+
+.pokemon-personne > legend {
+  padding: 0;
+  font-family: var(--police-titre);
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+.pokemon-personne__statut {
+  min-height: 1.4em;
+  margin: 0.1rem 0 0.6rem;
+  font-size: 0.875rem;
+  color: var(--sauge-fonce);
+}
+
+.pokemons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+}
+
+.pokemon {
+  position: relative;
+}
+
+.pokemon input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  margin: 0;
+}
+
+.pokemon__carte {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  height: 100%;
+  padding: 0.75rem 0.4rem 0.6rem;
+  border: 2px solid var(--trait);
+  border-radius: 14px;
+  background: var(--papier);
+  text-align: center;
+  transition: border-color 0.15s, transform 0.15s, background 0.15s;
+}
+
+.pokemon__carte img {
+  width: 4.5rem;
+  height: 4.5rem;
+  object-fit: contain;
+}
+
+.pokemon__nom {
+  font-size: 0.875rem;
+  line-height: 1.2;
+}
+
+.pokemon:hover .pokemon__carte {
+  transform: translateY(-2px);
+}
+
+.pokemon input:checked + .pokemon__carte {
+  border-color: var(--terracotta);
+  background: #fbeee4;
+  transform: scale(1.03);
+}
+
+.pokemon input:focus-visible + .pokemon__carte {
+  outline: 2px solid var(--sauge);
+  outline-offset: 2px;
+}
+
+/* Image pas encore déposée : l'initiale du Pokémon à sa place. */
+.pokemon--sans-image .pokemon__carte img {
+  display: none;
+}
+
+.pokemon--sans-image .pokemon__carte::before {
+  content: attr(data-initiale);
+  display: grid;
+  place-items: center;
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 50%;
+  background: var(--creme-fonce);
+  font-family: var(--police-titre);
+  font-size: 2rem;
+  color: var(--encre-douce);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pokemon__carte {
+    transition: none;
   }
 }

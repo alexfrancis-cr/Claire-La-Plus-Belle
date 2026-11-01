@@ -69,6 +69,18 @@ window.MARIAGE = {
     ],
   },
 
+  // La page « Ton Pokémon ». Les images vont dans site/pokemon/ ; tant qu'un
+  // fichier manque, la carte affiche l'initiale du Pokémon.
+  // L'identifiant (id) doit rester celui de POKEMONS dans apps-script/Code.gs.
+  pokemons: [
+    { id: "pikachu", nom: "Pikachu", image: "pokemon/pikachu.png" },
+    { id: "psykokwak", nom: "Psykokwak", image: "pokemon/psykokwak.png" },
+    { id: "salameche", nom: "Salamèche", image: "pokemon/salameche.png" },
+    { id: "carapuce", nom: "Carapuce", image: "pokemon/carapuce.png" },
+    { id: "imposteur", nom: "Pikachu imposteur", image: "pokemon/imposteur.png" },
+    { id: "rondoudou", nom: "Rondoudou", image: "pokemon/rondoudou.png" },
+  ],
+
   regimes: [
     "Aucun",
     "Végétarien",

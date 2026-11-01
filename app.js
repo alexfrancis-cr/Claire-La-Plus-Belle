@@ -228,27 +228,87 @@
     $("message").value = foyer.message || "";
   }
 
+  // ---------- Ton Pokémon ----------
+
+  async function envoyerPokemon(choix) {
+    if (modeDemo) return { ok: true };
+    const reponse = await fetch(config.apiUrl, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ action: "pokemon", code: codeCourant, choix }),
+    });
+    if (!reponse.ok) throw new Error("HTTP " + reponse.status);
+    return reponse.json();
+  }
+
+  function cartePokemon(personne, pokemon) {
+    const image = el("img", { src: pokemon.image, alt: "", loading: "lazy", width: "96", height: "96" });
+    const carte = el(
+      "label",
+      { class: "pokemon" },
+      el("input", {
+        type: "radio",
+        name: `pokemon-${personne.id}`,
+        value: pokemon.id,
+        checked: personne.pokemon === pokemon.id,
+      }),
+      el("span", { class: "pokemon__carte", "data-initiale": pokemon.nom.charAt(0) }, image, el("span", { class: "pokemon__nom" }, pokemon.nom)),
+    );
+    // Image pas encore déposée dans site/pokemon/ : on montre l'initiale.
+    image.addEventListener("error", () => carte.classList.add("pokemon--sans-image"));
+    return carte;
+  }
+
+  function afficherPokemons(foyer) {
+    const enfants = foyer.personnes.filter((personne) => personne.type === "enfant" && !personne.prenom).length;
+    let rangEnfant = 0;
+    $("choix-pokemon").replaceChildren(
+      ...foyer.personnes.map((personne) => {
+        if (personne.type === "enfant" && !personne.prenom) rangEnfant += 1;
+        return el(
+          "fieldset",
+          { class: "pokemon-personne", "data-personne": personne.id },
+          el("legend", {}, nomAffiche(personne, { enfants, enfant: rangEnfant })),
+          el("p", { class: "pokemon-personne__statut", id: `statut-pokemon-${personne.id}`, role: "status" }),
+          el("div", { class: "pokemons" }, ...config.pokemons.map((pokemon) => cartePokemon(personne, pokemon))),
+        );
+      }),
+    );
+  }
+
+  $("choix-pokemon").addEventListener("change", async (evenement) => {
+    const choix = evenement.target;
+    if (!choix.matches('input[type="radio"]')) return;
+    const id = choix.name.replace("pokemon-", "");
+    const statut = $(`statut-pokemon-${id}`);
+    const nom = config.pokemons.find((pokemon) => pokemon.id === choix.value)?.nom || choix.value;
+    statut.textContent = "Enregistrement…";
+    try {
+      const resultat = await envoyerPokemon([{ id, pokemon: choix.value }]);
+      if (!resultat.ok) throw new Error(resultat.erreur || "refus");
+      const personne = foyerCourant.personnes.find((p) => p.id === id);
+      if (personne) personne.pokemon = choix.value;
+      statut.textContent = `${nom} ✓ ${modeDemo ? "(démo : rien n'est enregistré)" : "enregistré"}`;
+    } catch {
+      statut.textContent = "Pas enregistré, réessayez dans un instant.";
+    }
+  });
+
   // ---------- Le parcours en étapes ----------
 
   // Les étapes 0 (accès) et 1 (la lettre) sont des écrans à part ;
-  // celles-ci sont les pages du site, une par écran.
-  const ETAPES = ["mariage", "jeu", "invites"];
+  // celles-ci sont les pages du site, une par écran, sans fil d'étapes affiché.
+  const ETAPES = ["mariage", "jeu", "pokemon", "invites"];
+  const NOMS_ETAPES = { mariage: "Le mariage", jeu: "Le jeu", pokemon: "Ton Pokémon", invites: "Vos infos" };
 
   function nomEtape(etape) {
-    return document.querySelector(`#etapes [data-aller="${etape}"] .etapes__nom`).textContent;
+    return NOMS_ETAPES[etape];
   }
 
   function allerA(etape, options = { focus: true }) {
     const rang = ETAPES.indexOf(etape);
     document.querySelectorAll(".etape").forEach((section) => {
       section.hidden = section.dataset.etape !== etape;
-    });
-    document.querySelectorAll("#etapes button").forEach((bouton) => {
-      const sonRang = ETAPES.indexOf(bouton.dataset.aller);
-      bouton.classList.toggle("courante", sonRang === rang);
-      bouton.classList.toggle("faite", sonRang < rang);
-      if (sonRang === rang) bouton.setAttribute("aria-current", "step");
-      else bouton.removeAttribute("aria-current");
     });
 
     const precedente = ETAPES[rang - 1];
@@ -273,10 +333,6 @@
     if (cible) allerA(cible);
   }
 
-  $("etapes").addEventListener("click", (evenement) => {
-    const bouton = evenement.target.closest("[data-aller]");
-    if (bouton) allerA(bouton.dataset.aller);
-  });
   $("etape-precedente").addEventListener("click", () => etapeVoisine(-1));
   $("etape-suivante").addEventListener("click", () => etapeVoisine(1));
 
@@ -291,6 +347,7 @@
     afficherProgramme(evenements);
     afficherInfos(evenements);
     afficherLots();
+    afficherPokemons(foyer);
     afficherFormulaire(foyer);
 
     const dejaRepondu = foyer.personnes.some((personne) => personne.reponse);
@@ -557,7 +614,9 @@
     }
   }
 
-  function lancerFeuxDArtifice() {
+  function lancerFeuxDArtifice(options = {}) {
+    const salves = options.salves ?? 9;
+    const confettis = options.confettis ?? 160;
     const canvas = $("feux");
     const ratio = window.devicePixelRatio || 1;
     canvas.width = window.innerWidth * ratio;
@@ -566,13 +625,12 @@
     particules = [];
     window.cancelAnimationFrame(animation);
 
-    const salves = 9;
     for (let i = 0; i < salves; i += 1) {
       window.setTimeout(() => {
         exploser(canvas, canvas.width * (0.15 + Math.random() * 0.7), canvas.height * (0.15 + Math.random() * 0.45), 90 * ratio);
       }, i * 280);
     }
-    pleuvoirConfettis(canvas, 160);
+    pleuvoirConfettis(canvas, confettis);
 
     const image = () => {
       contexte.clearRect(0, 0, canvas.width, canvas.height);
@@ -689,9 +747,19 @@
       ouverture.hidden = true;
       allerA("mariage");
     };
-    // Durée totale de l'animation (rabat, lettre, fondu) : voir styles.css.
-    if (sansAnimation) reveler();
-    else window.setTimeout(reveler, 2400);
+    if (sansAnimation) {
+      reveler();
+      return;
+    }
+    // Le rythme suit styles.css : le rabat bascule (0,75 s), la lettre sort
+    // à partir de 0,42 s ; le feu d'artifice part quand elle émerge, puis
+    // fondu vers le site.
+    window.setTimeout(() => lancerFeuxDArtifice({ salves: 7, confettis: 120 }), 650);
+    window.setTimeout(() => {
+      $("site").classList.add("apparait");
+      ouverture.classList.add("fin");
+    }, 1550);
+    window.setTimeout(reveler, 2150);
   }
 
   // Le piège : « Touchez le sceau » est faux. Le sceau fait protester
@@ -720,7 +788,7 @@
     $("ouverture-aide").textContent = "Bien joué !";
     // Le temps que le nœud se défasse et que la ficelle tombe.
     if (sansAnimation) ouvrirLettre();
-    else window.setTimeout(ouvrirLettre, 800);
+    else window.setTimeout(ouvrirLettre, 550);
   });
 
   // Le lien personnel pré-remplit le code ; l'invité valide lui-même l'accès.
