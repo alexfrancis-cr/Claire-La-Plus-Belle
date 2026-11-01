@@ -1,0 +1,4 @@
+# Ne jamais publier de données d'invités.
+*.csv
+*.xlsx
+.DS_Store

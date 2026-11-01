@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Claire la plus belle et Alex</title>
+    <meta name="description" content="Faire-part de mariage de Claire la plus belle et Alex, Hossegor, juillet 2027." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&family=Pinyon+Script&display=swap"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 30C16 18 8 12 4 4c8 2 14 8 12 26zm0 0c0-12 8-18 12-26-8 2-14 8-12 26z' fill='%237d8f6a'/%3E%3C/svg%3E"
+    />
+  </head>
+  <body class="enveloppe-fermee">
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+      <!-- Branche feuillue, réutilisée partout. -->
+      <symbol id="branche" viewBox="0 0 240 60">
+        <path d="M4 34 C 60 30, 130 26, 236 30" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
+        <g fill="currentColor">
+          <path d="M40 32 c -6 -14 4 -24 16 -26 c -2 12 -6 22 -16 26z" opacity=".75" />
+          <path d="M58 31 c 4 12 16 18 28 16 c -6 -10 -16 -16 -28 -16z" opacity=".55" />
+          <path d="M84 30 c -4 -14 8 -22 20 -22 c -4 12 -10 20 -20 22z" opacity=".8" />
+          <path d="M106 29 c 6 12 18 16 30 12 c -8 -10 -18 -14 -30 -12z" opacity=".6" />
+          <path d="M132 29 c -2 -14 10 -22 22 -20 c -4 12 -12 18 -22 20z" opacity=".75" />
+          <path d="M156 29 c 6 10 18 14 28 10 c -8 -8 -18 -12 -28 -10z" opacity=".5" />
+          <path d="M180 30 c -2 -12 8 -18 18 -16 c -4 10 -10 14 -18 16z" opacity=".7" />
+        </g>
+        <g fill="var(--terracotta)">
+          <circle cx="206" cy="24" r="3.2" />
+          <circle cx="214" cy="20" r="2.4" />
+          <circle cx="212" cy="29" r="2" />
+          <circle cx="22" cy="28" r="2.6" />
+        </g>
+      </symbol>
+
+      <!--
+        Silhouette de grange, en attendant le vrai profil du Coco Barn :
+        à redessiner d'après une photo de face du bâtiment.
+      -->
+      <symbol id="grange" viewBox="0 0 400 200">
+        <g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">
+          <path d="M8 196 H392" />
+          <path d="M120 196 V96 L200 28 L280 96 V196" />
+          <path d="M120 112 L56 112 L36 142 V196" />
+          <path d="M280 112 L344 112 L364 142 V196" />
+          <path d="M108 104 L200 22 L292 104" />
+          <path d="M170 196 V132 Q200 106 230 132 V196" />
+          <path d="M200 112 V196" />
+          <circle cx="200" cy="74" r="13" />
+          <path d="M187 74 H213 M200 61 V87" />
+          <path d="M62 150 h26 v24 h-26z M312 150 h26 v24 h-26z" />
+          <path d="M75 150 v24 M325 150 v24" />
+        </g>
+        <g fill="currentColor" opacity=".55">
+          <path d="M18 196 c 2 -14 8 -20 14 -22 c 0 10 -6 18 -14 22z" />
+          <path d="M382 196 c -2 -14 -8 -20 -14 -22 c 0 10 6 18 14 22z" />
+          <path d="M28 196 c -4 -10 -2 -18 4 -22 c 2 8 0 16 -4 22z" />
+          <path d="M372 196 c 4 -10 2 -18 -4 -22 c -2 8 0 16 4 22z" />
+        </g>
+      </symbol>
+    </svg>
+
+    <!-- La lettre : premier écran. Le reste du site est inerte tant qu'elle est fermée. -->
+    <div class="ouverture" id="ouverture">
+      <svg class="grange grange--ouverture" aria-hidden="true"><use href="#grange" /></svg>
+      <div class="enveloppe" id="enveloppe">
+        <div class="enveloppe__dos"></div>
+        <div class="lettre" aria-hidden="true">
+          <p class="lettre__noms">Claire la plus belle<br /><span>&amp;</span> Alex</p>
+          <p class="lettre__lieu">Hossegor · 2027</p>
+        </div>
+        <div class="enveloppe__devant">
+          <p class="enveloppe__pour" id="enveloppe-pour">Vous êtes invités</p>
+        </div>
+        <div class="enveloppe__rabat"></div>
+        <button type="button" class="sceau" id="sceau" aria-label="Ouvrir l'invitation">
+          <span aria-hidden="true">C&amp;A</span>
+        </button>
+      </div>
+      <p class="ouverture__aide">Touchez le sceau pour ouvrir</p>
+    </div>
+
+    <div id="site" inert>
+      <header class="hero">
+        <svg class="branche branche--haut" aria-hidden="true"><use href="#branche" /></svg>
+        <p class="hero__surtitre">Nous nous marions</p>
+        <h1 class="hero__noms">
+          <span id="nom-mariee">Claire la plus belle</span>
+          <span class="hero__et" aria-hidden="true">&amp;</span>
+          <span class="visually-hidden">et</span>
+          <span id="nom-marie">Alex</span>
+        </h1>
+        <p class="hero__dates" id="hero-dates"></p>
+        <p class="hero__lieu" id="hero-lieu">Hossegor</p>
+        <svg class="branche branche--bas" aria-hidden="true"><use href="#branche" /></svg>
+        <svg class="grange grange--fond" aria-hidden="true"><use href="#grange" /></svg>
+      </header>
+
+      <main>
+        <p class="bandeau-demo" id="bandeau-demo" hidden>Mode démo : les réponses ne sont envoyées nulle part.</p>
+
+        <!-- Sans code : on demande le code reçu avec l'invitation. -->
+        <section class="carte carte--code" id="section-code" hidden aria-labelledby="titre-code">
+          <h2 id="titre-code">Votre invitation</h2>
+          <p>Entrez le code reçu avec votre invitation pour découvrir le programme et nous répondre.</p>
+          <form id="form-code" class="form-code" novalidate>
+            <label for="champ-code">Code d'invitation</label>
+            <div class="form-code__ligne">
+              <input
+                id="champ-code"
+                name="code"
+                autocomplete="off"
+                autocapitalize="characters"
+                spellcheck="false"
+                maxlength="12"
+                required
+              />
+              <button type="submit" class="bouton">Valider</button>
+            </div>
+            <p class="message-erreur" id="erreur-code" role="alert"></p>
+          </form>
+        </section>
+
+        <p class="chargement" id="chargement" hidden role="status">Un instant…</p>
+
+        <!-- Avec un code valide : tout le reste, filtré pour ce foyer. -->
+        <div id="contenu-invite" hidden>
+          <p class="accueil" id="accueil"></p>
+
+          <section aria-labelledby="titre-programme">
+            <h2 class="titre-section" id="titre-programme">Le programme</h2>
+            <div class="evenements" id="liste-evenements"></div>
+          </section>
+
+          <section aria-labelledby="titre-infos">
+            <h2 class="titre-section" id="titre-infos">Infos pratiques</h2>
+            <div class="infos" id="liste-infos"></div>
+          </section>
+
+          <section class="carte" aria-labelledby="titre-reponse">
+            <h2 class="titre-section titre-section--carte" id="titre-reponse">Votre réponse</h2>
+            <p class="sous-titre">Dites-nous qui sera là. Vous pourrez revenir modifier votre réponse avec le même lien.</p>
+            <form id="form-reponse" novalidate>
+              <div id="personnes"></div>
+              <div class="champ">
+                <label for="message">Un mot pour nous <span class="facultatif">(facultatif)</span></label>
+                <textarea id="message" name="message" rows="4" maxlength="1000"></textarea>
+              </div>
+              <p class="message-erreur" id="erreur-reponse" role="alert"></p>
+              <button type="submit" class="bouton bouton--large" id="bouton-envoyer">Envoyer notre réponse</button>
+            </form>
+            <div class="merci" id="merci" hidden tabindex="-1">
+              <p class="merci__titre">Merci !</p>
+              <p id="merci-texte">Votre réponse est bien enregistrée.</p>
+              <button type="button" class="bouton bouton--discret" id="bouton-modifier">Modifier ma réponse</button>
+            </div>
+          </section>
+        </div>
+      </main>
+
+      <footer class="pied">
+        <svg class="branche branche--pied" aria-hidden="true"><use href="#branche" /></svg>
+        <p>Avec tout notre amour, Claire &amp; Alex</p>
+      </footer>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="demo.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

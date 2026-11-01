@@ -1,0 +1,716 @@
+/* Bohème / champêtre : crème, sauge, terracotta. Les couleurs sont ici et nulle part ailleurs. */
+:root {
+  --creme: #f7f1e6;
+  --creme-fonce: #efe5d3;
+  --papier: #fffbf4;
+  --sauge: #7d8f6a;
+  --sauge-fonce: #55654a;
+  --terracotta: #c0714f;
+  --terracotta-fonce: #9c5233;
+  --encre: #3d3a33;
+  --encre-douce: #6b6458;
+  --trait: #d9ccb4;
+  --erreur: #a3402a;
+
+  --police-titre: "Cormorant Garamond", Georgia, serif;
+  --police-script: "Pinyon Script", "Cormorant Garamond", cursive;
+  --police-texte: "Jost", system-ui, sans-serif;
+
+  --rayon: 18px;
+  --largeur: 46rem;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--creme);
+  background-image: radial-gradient(circle at 15% 10%, rgba(125, 143, 106, 0.1), transparent 40%),
+    radial-gradient(circle at 85% 90%, rgba(192, 113, 79, 0.08), transparent 45%);
+  color: var(--encre);
+  font-family: var(--police-texte);
+  font-weight: 300;
+  font-size: 1.0625rem;
+  line-height: 1.65;
+}
+
+main {
+  width: min(100% - 2rem, var(--largeur));
+  margin: 0 auto 4rem;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---------- En-tête ---------- */
+.hero {
+  text-align: center;
+  padding: 3.5rem 1rem 2.5rem;
+}
+
+.branche {
+  display: block;
+  width: min(15rem, 70vw);
+  height: 3.75rem;
+  margin: 0 auto;
+  color: var(--sauge);
+}
+
+.branche--bas {
+  transform: scaleX(-1);
+}
+
+.hero__surtitre {
+  margin: 1.25rem 0 0.25rem;
+  font-family: var(--police-texte);
+  font-size: 0.8125rem;
+  font-weight: 400;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--sauge-fonce);
+}
+
+.hero__noms {
+  margin: 0;
+  font-family: var(--police-script);
+  font-weight: 400;
+  font-size: clamp(2.75rem, 11vw, 5rem);
+  line-height: 1.15;
+  color: var(--encre);
+}
+
+.hero__noms > span {
+  display: block;
+}
+
+.hero__et {
+  font-family: var(--police-titre);
+  font-style: italic;
+  font-size: 0.55em;
+  color: var(--terracotta);
+  margin: 0.1em 0;
+}
+
+.hero__dates {
+  margin: 1rem 0 1.25rem;
+  font-family: var(--police-titre);
+  font-size: 1.375rem;
+  letter-spacing: 0.04em;
+  color: var(--encre-douce);
+}
+
+.hero__dates:empty {
+  display: none;
+}
+
+.hero__dates:empty + .hero__lieu {
+  margin-top: 1.25rem;
+}
+
+/* ---------- Blocs ---------- */
+.carte {
+  background: var(--papier);
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon);
+  padding: 2rem clamp(1.25rem, 5vw, 2.5rem);
+  margin: 2.5rem 0;
+  box-shadow: 0 1px 0 rgba(61, 58, 51, 0.04);
+}
+
+.carte--code {
+  text-align: center;
+}
+
+.carte--code h2 {
+  font-family: var(--police-titre);
+  font-weight: 500;
+  font-size: 1.875rem;
+  margin: 0 0 0.5rem;
+}
+
+.titre-section {
+  font-family: var(--police-titre);
+  font-weight: 500;
+  font-size: 2rem;
+  text-align: center;
+  margin: 3.5rem 0 1.5rem;
+}
+
+.titre-section::after {
+  content: "";
+  display: block;
+  width: 3rem;
+  height: 1px;
+  margin: 0.75rem auto 0;
+  background: var(--terracotta);
+}
+
+.titre-section--carte {
+  margin-top: 0;
+}
+
+.sous-titre {
+  text-align: center;
+  color: var(--encre-douce);
+  margin: 0 0 2rem;
+}
+
+.accueil {
+  text-align: center;
+  font-family: var(--police-titre);
+  font-style: italic;
+  font-size: 1.5rem;
+  margin: 1rem 0 0;
+}
+
+.bandeau-demo {
+  margin: 0 0 1rem;
+  padding: 0.6rem 1rem;
+  border: 1px dashed var(--terracotta);
+  border-radius: 999px;
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--terracotta-fonce);
+}
+
+.chargement {
+  text-align: center;
+  color: var(--encre-douce);
+}
+
+/* ---------- Programme ---------- */
+.evenements {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+}
+
+.evenement {
+  background: var(--papier);
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon);
+  padding: 1.75rem 1.5rem;
+  text-align: center;
+}
+
+.evenement__nom {
+  margin: 0;
+  font-family: var(--police-texte);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--sauge-fonce);
+}
+
+.evenement__date {
+  margin: 0.5rem 0 0.25rem;
+  font-family: var(--police-titre);
+  font-size: 1.625rem;
+  line-height: 1.2;
+}
+
+.evenement__lieu {
+  margin: 0;
+  font-family: var(--police-titre);
+  font-style: italic;
+  font-size: 1.25rem;
+  color: var(--terracotta-fonce);
+}
+
+.evenement__horaires {
+  margin: 0.75rem 0 1rem;
+  font-size: 0.9375rem;
+  color: var(--encre-douce);
+}
+
+.lien {
+  color: var(--sauge-fonce);
+  text-decoration-color: var(--terracotta);
+  text-underline-offset: 0.2em;
+}
+
+/* ---------- Infos pratiques ---------- */
+.infos {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+}
+
+.info {
+  padding: 1.25rem 1.25rem 1.25rem 1.5rem;
+  border-left: 2px solid var(--sauge);
+  background: rgba(255, 251, 244, 0.6);
+  border-radius: 0 var(--rayon) var(--rayon) 0;
+}
+
+.info h3 {
+  margin: 0 0 0.35rem;
+  font-family: var(--police-titre);
+  font-weight: 600;
+  font-size: 1.3125rem;
+}
+
+.info p {
+  margin: 0;
+  color: var(--encre-douce);
+}
+
+/* ---------- Formulaires ---------- */
+label,
+legend {
+  font-weight: 400;
+}
+
+input,
+select,
+textarea,
+button {
+  font: inherit;
+}
+
+input[type="text"],
+input:not([type]),
+select,
+textarea {
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--trait);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--encre);
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+button:focus-visible,
+.choix input:focus-visible + span {
+  outline: 2px solid var(--sauge);
+  outline-offset: 2px;
+}
+
+.form-code {
+  max-width: 24rem;
+  margin: 1.5rem auto 0;
+  text-align: left;
+}
+
+.form-code__ligne {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+}
+
+.form-code__ligne input {
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
+.personne {
+  border: 0;
+  border-top: 1px solid var(--trait);
+  margin: 0;
+  padding: 1.5rem 0;
+}
+
+.personne:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.personne > legend {
+  float: left;
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: 0;
+  font-family: var(--police-titre);
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+.personne > legend + * {
+  clear: both;
+}
+
+.champ {
+  margin: 0 0 1.25rem;
+}
+
+.champ > label,
+.question > legend {
+  display: block;
+  margin-bottom: 0.4rem;
+}
+
+.question {
+  border: 0;
+  margin: 0 0 1.25rem;
+  padding: 0;
+}
+
+.question > legend {
+  padding: 0;
+}
+
+.question small {
+  display: block;
+  color: var(--encre-douce);
+  font-size: 0.875rem;
+}
+
+.choix-groupe {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.choix {
+  position: relative;
+}
+
+.choix input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.choix span {
+  display: inline-block;
+  padding: 0.5rem 1.1rem;
+  border: 1px solid var(--trait);
+  border-radius: 999px;
+  background: #fff;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.choix input:checked + span {
+  background: var(--sauge);
+  border-color: var(--sauge);
+  color: #fff;
+}
+
+.choix input[value="non"]:checked + span {
+  background: var(--terracotta);
+  border-color: var(--terracotta);
+}
+
+.facultatif {
+  color: var(--encre-douce);
+  font-size: 0.875rem;
+}
+
+.message-erreur {
+  min-height: 1.5em;
+  margin: 0.5rem 0;
+  color: var(--erreur);
+  font-weight: 400;
+}
+
+.message-erreur:empty {
+  min-height: 0;
+  margin: 0;
+}
+
+.bouton {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.75rem 1.5rem;
+  background: var(--sauge-fonce);
+  color: #fff;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.bouton:hover {
+  background: var(--terracotta-fonce);
+}
+
+.bouton:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.bouton--large {
+  display: block;
+  width: 100%;
+  padding: 1rem;
+  font-size: 1.0625rem;
+}
+
+.bouton--discret {
+  background: transparent;
+  color: var(--sauge-fonce);
+  border: 1px solid var(--sauge);
+}
+
+.bouton--discret:hover {
+  background: var(--creme-fonce);
+}
+
+.merci {
+  text-align: center;
+}
+
+.merci__titre {
+  margin: 0;
+  font-family: var(--police-script);
+  font-size: 3rem;
+  color: var(--terracotta);
+}
+
+/* ---------- Pied ---------- */
+.pied {
+  text-align: center;
+  padding: 1rem 1rem 3rem;
+  font-family: var(--police-titre);
+  font-style: italic;
+  font-size: 1.125rem;
+  color: var(--encre-douce);
+}
+
+.branche--pied {
+  width: 9rem;
+  height: 2.25rem;
+  opacity: 0.8;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
+
+/* ---------- Lieu et silhouette de la grange ---------- */
+.hero {
+  position: relative;
+  overflow: hidden;
+}
+
+
+.grange {
+  display: block;
+  color: var(--sauge);
+}
+
+/* Le Coco Barn sert de socle à l'en-tête, sous le texte, jamais derrière. */
+.grange--fond {
+  width: min(30rem, 100%);
+  height: auto;
+  aspect-ratio: 2 / 1;
+  margin: -0.5rem auto -2.5rem;
+  opacity: 0.22;
+  pointer-events: none;
+}
+
+.hero__lieu {
+  margin: 0 0 1.25rem;
+  font-family: var(--police-texte);
+  font-size: 0.8125rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--terracotta-fonce);
+}
+
+/* ---------- La lettre à ouvrir ---------- */
+body.enveloppe-fermee {
+  overflow: hidden;
+}
+
+.ouverture {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 1rem;
+  background: var(--creme);
+  transition: opacity 0.7s ease 1.7s, visibility 0s linear 2.4s;
+}
+
+.ouverture.ouverte {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.grange--ouverture {
+  position: absolute;
+  bottom: 6vh;
+  left: 50%;
+  width: min(40rem, 130vw);
+  aspect-ratio: 2 / 1;
+  transform: translateX(-50%);
+  opacity: 0.12;
+  pointer-events: none;
+}
+
+.enveloppe {
+  position: relative;
+  width: min(88vw, 26rem);
+  aspect-ratio: 3 / 2;
+  perspective: 1400px;
+}
+
+.enveloppe__dos,
+.enveloppe__devant,
+.enveloppe__rabat {
+  position: absolute;
+  inset: 0;
+  border-radius: 6px;
+}
+
+.enveloppe__dos {
+  z-index: 1;
+  background: #e6d6ba;
+  box-shadow: 0 18px 40px -18px rgba(61, 58, 51, 0.45);
+}
+
+.lettre {
+  position: absolute;
+  z-index: 2;
+  left: 6%;
+  right: 6%;
+  top: 6%;
+  bottom: 4%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--papier);
+  border: 1px solid var(--trait);
+  border-radius: 4px;
+  text-align: center;
+  transition: transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) 0.6s;
+}
+
+.lettre__noms {
+  margin: 0;
+  font-family: var(--police-script);
+  font-size: clamp(1.6rem, 7vw, 2.2rem);
+  line-height: 1.2;
+}
+
+.lettre__noms span {
+  font-family: var(--police-titre);
+  font-style: italic;
+  font-size: 0.7em;
+  color: var(--terracotta);
+}
+
+.lettre__lieu {
+  margin: 0.4rem 0 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--sauge-fonce);
+}
+
+.enveloppe__devant {
+  z-index: 3;
+  background: #efe3cc;
+  clip-path: polygon(0 0, 50% 52%, 100% 0, 100% 100%, 0 100%);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 9%;
+}
+
+.enveloppe__pour {
+  margin: 0;
+  font-family: var(--police-titre);
+  font-style: italic;
+  font-size: clamp(1.1rem, 4.5vw, 1.4rem);
+  color: var(--encre-douce);
+  text-align: center;
+  padding: 0 1rem;
+}
+
+.enveloppe__rabat {
+  z-index: 4;
+  background: #e9dbc1;
+  clip-path: polygon(0 0, 100% 0, 50% 58%);
+  transform-origin: top center;
+  transition: transform 0.6s ease-in-out, z-index 0s linear 0.3s;
+}
+
+.sceau {
+  position: absolute;
+  z-index: 5;
+  left: 50%;
+  top: 58%;
+  width: 4.25rem;
+  height: 4.25rem;
+  transform: translate(-50%, -50%);
+  border: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #d4875f, var(--terracotta-fonce) 70%);
+  box-shadow: 0 3px 8px rgba(61, 58, 51, 0.35), inset 0 0 0 4px rgba(255, 255, 255, 0.12);
+  color: var(--creme);
+  font-family: var(--police-script);
+  font-size: 1.35rem;
+  cursor: pointer;
+  transition: transform 0.25s ease, opacity 0.3s ease;
+}
+
+.sceau:hover {
+  transform: translate(-50%, -50%) scale(1.06);
+}
+
+.sceau:focus-visible {
+  outline: 2px solid var(--sauge-fonce);
+  outline-offset: 4px;
+}
+
+.ouverture__aide {
+  margin: 0;
+  font-size: 0.8125rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--encre-douce);
+  transition: opacity 0.3s;
+}
+
+/* Ouverture : le sceau disparaît, le rabat bascule, la lettre sort, puis tout s'efface. */
+.ouverte .sceau,
+.ouverte .ouverture__aide {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ouverte .enveloppe__rabat {
+  transform: rotateX(180deg);
+  z-index: 1;
+}
+
+.ouverte .lettre {
+  transform: translateY(-62%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ouverture,
+  .lettre,
+  .enveloppe__rabat {
+    transition: none !important;
+  }
+}
