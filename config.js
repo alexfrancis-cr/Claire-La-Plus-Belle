@@ -44,7 +44,7 @@ window.MARIAGE = {
       titre: "Tenue",
       evenements: ["arrivee", "mariage"],
       texte: "À venir.",
-      photoCachee: "2", // le jeu : une photo de Claire cachée dans ce bloc
+      photoCachee: "2", // le jeu : une zone invisible dans ce bloc cache la photo 2
     },
     {
       titre: "Liste de mariage",
@@ -53,15 +53,20 @@ window.MARIAGE = {
     },
   ],
 
-  // Le jeu : trois petites photos de Claire cachées sur le site. Le premier
-  // foyer qui trouve une photo gagne un lot (enregistré dans le Google Sheet,
-  // feuille « Trouvailles »).
+  // Le jeu : trois photos de Claire cachées, invisibles, sur le site. Chaque
+  // foyer qui trouve une photo est inscrit (Google Sheet, feuille
+  // « Trouvailles ») au tirage au sort du lot de cette photo.
   jeu: {
     photos: {
       1: "jeu/claire-1.jpg",
       2: "jeu/claire-2.jpg",
       3: "jeu/claire-3.jpg",
     },
+    lots: [
+      { photo: "1", nom: "Booster Pokémon Team Up", image: "jeu/lot-1.jpg" },
+      { photo: "2", nom: "Booster Pokémon Générations", image: "jeu/lot-2.png" },
+      { photo: "3", nom: "Lot de 6 boosters Méga-Évolution Héros Transcendants", image: "jeu/lot-3.jpg" },
+    ],
   },
 
   regimes: [

@@ -742,35 +742,18 @@ body.enveloppe-fermee {
   }
 }
 
-/* ---------- Le jeu : trois photos de Claire cachées ---------- */
+/* ---------- Le jeu : trois zones de clic invisibles ---------- */
+/* Rien ne doit trahir une cachette : ni image, ni contour, ni effet au survol. */
 .cachette {
   position: absolute;
   padding: 0;
   border: 0;
   border-radius: 50%;
-  overflow: hidden;
-  background: none;
-  cursor: var(--curseur-clic);
+  background: transparent;
+  outline: none;
   transform: translate(-50%, -50%);
   -webkit-tap-highlight-color: transparent;
-}
-
-.cachette img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: sepia(0.35) saturate(0.85);
-  opacity: 0.85;
-}
-
-.cachette:focus-visible {
-  outline: 2px solid var(--terracotta);
-  outline-offset: 2px;
-}
-
-.cachette.trouvee {
-  box-shadow: 0 0 0 2px var(--terracotta);
+  appearance: none;
 }
 
 /* La fenêtre ronde de la grange : centre (200, 74), rayon 13 dans un dessin de 400 × 200. */
@@ -795,22 +778,111 @@ body.enveloppe-fermee {
 .cachette--baie {
   left: 85.8%;
   top: 40%;
-  width: 0.95rem;
+  width: 1.5rem;
   aspect-ratio: 1;
 }
 
-/* Dans une carte d'infos pratiques : un petit timbre rond dans le coin. */
+/* Le coin haut droit d'une carte d'infos pratiques. */
 .info {
   position: relative;
 }
 
 .cachette--info {
   left: auto;
-  right: 0.35rem;
-  top: 0.35rem;
-  width: 1.05rem;
+  right: 0.25rem;
+  top: 0.25rem;
+  width: 1.5rem;
   aspect-ratio: 1;
   transform: none;
+}
+
+/* Les lots */
+.lots {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+
+
+.lot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 1.25rem 1rem;
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon);
+  background: var(--papier);
+  text-align: center;
+}
+
+.lot img {
+  height: 9rem;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 10px rgba(61, 58, 51, 0.2));
+}
+
+.lot__numero {
+  margin: 0.5rem 0 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--sauge-fonce);
+}
+
+.lot__nom {
+  margin: 0;
+  font-family: var(--police-titre);
+  font-size: 1.1875rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.lot__statut {
+  margin: 0.25rem 0 0;
+  font-size: 0.875rem;
+  color: var(--encre-douce);
+}
+
+.lot__statut--trouvee {
+  color: var(--terracotta-fonce);
+  font-weight: 400;
+}
+
+/* Sur téléphone : une liste, image à gauche, texte à droite. */
+@media (max-width: 34rem) {
+  .lots {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .lot {
+    display: grid;
+    grid-template-columns: 4.5rem 1fr;
+    grid-template-rows: auto auto auto;
+    column-gap: 1rem;
+    align-items: center;
+    padding: 0.9rem 1rem;
+    text-align: left;
+  }
+
+  .lot img {
+    grid-row: 1 / 4;
+    height: 6.5rem;
+    justify-self: center;
+  }
+
+  .lot__numero {
+    margin: 0;
+    align-self: end;
+  }
+
+  .lot__statut {
+    align-self: start;
+  }
 }
 
 /* ---------- Victoire ---------- */
@@ -875,6 +947,19 @@ body.enveloppe-fermee {
   font-weight: 400;
 }
 
+.victoire__lot {
+  display: block;
+  height: 7.5rem;
+  width: auto;
+  margin: 0.5rem auto 0.75rem;
+  filter: drop-shadow(0 6px 10px rgba(61, 58, 51, 0.25));
+  animation: tourbillon 0.9s cubic-bezier(0.2, 1.4, 0.4, 1) 0.3s both;
+}
+
+.victoire__lot[hidden] {
+  display: none;
+}
+
 .victoire__score {
   margin: 0 0 1.25rem;
   font-size: 0.875rem;
@@ -927,6 +1012,7 @@ body.enveloppe-fermee {
 @media (prefers-reduced-motion: reduce) {
   .victoire__carte,
   .victoire__photo,
+  .victoire__lot,
   .victoire__titre,
   .secousse {
     animation: none !important;

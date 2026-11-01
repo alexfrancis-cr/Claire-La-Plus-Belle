@@ -88,7 +88,7 @@
 
   function nomAffiche(personne, rang) {
     if (personne.prenom) return personne.prenom;
-    if (personne.type === "enfant") return rang.enfants > 1 ? `Votre enfant n° ${rang.enfant}` : "Votre enfant";
+    if (personne.type === "enfant") return rang.enfants > 1 ? `Votre enfant n° ${rang.enfant}` : "Votre enfant";
     return "Votre accompagnant·e";
   }
 
@@ -238,6 +238,7 @@
     afficherEnTete(evenements);
     afficherProgramme(evenements);
     afficherInfos(evenements);
+    afficherLots();
     afficherFormulaire(foyer);
 
     const dejaRepondu = foyer.personnes.some((personne) => personne.reponse);
@@ -361,14 +362,41 @@
 
   // ---------- Le jeu : trois photos de Claire cachées ----------
 
+  // Une zone de clic invisible : ni image, ni focus clavier, ni nom lu.
   function cachette(photo) {
-    const bouton = el(
-      "button",
-      { type: "button", class: "cachette cachette--info", "data-photo": photo, "aria-label": "Petite photo" },
-      el("img", { src: `jeu/claire-${photo}-mini.jpg`, alt: "", width: "96", height: "96" }),
+    return el("button", {
+      type: "button",
+      class: "cachette cachette--info",
+      "data-photo": photo,
+      tabindex: "-1",
+      "aria-hidden": "true",
+    });
+  }
+
+  function lotDeLaPhoto(photo) {
+    const index = config.jeu.lots.findIndex((lot) => lot.photo === photo);
+    return index === -1 ? null : { ...config.jeu.lots[index], numero: index + 1 };
+  }
+
+  function afficherLots() {
+    const trouvees = photosTrouvees();
+    $("liste-lots").replaceChildren(
+      ...config.jeu.lots.map((lot, index) => {
+        const trouvee = trouvees.has(lot.photo);
+        return el(
+          "article",
+          { class: "lot" },
+          el("img", { src: lot.image, alt: lot.nom, loading: "lazy" }),
+          el("p", { class: "lot__numero" }, `Lot n° ${index + 1}`),
+          el("p", { class: "lot__nom" }, lot.nom),
+          el(
+            "p",
+            { class: trouvee ? "lot__statut lot__statut--trouvee" : "lot__statut" },
+            trouvee ? "Photo trouvée : vous participez au tirage !" : `Trouvez la photo n° ${lot.photo}`,
+          ),
+        );
+      }),
     );
-    if (photosTrouvees().has(photo)) bouton.classList.add("trouvee");
-    return bouton;
   }
 
   // Mémoire locale de ce navigateur, juste pour le compteur « 2 / 3 ».
@@ -501,12 +529,19 @@
     const photo = bouton.dataset.photo;
     const total = Object.keys(config.jeu.photos).length;
     const trouvees = noterPhoto(photo);
-    document.querySelectorAll(`.cachette[data-photo="${photo}"]`).forEach((b) => b.classList.add("trouvee"));
+    const lot = lotDeLaPhoto(photo);
+    const annonceLot = lot ? `tirage au sort du lot n° ${lot.numero} : ${lot.nom}` : "tirage au sort";
+    if (foyerCourant) afficherLots();
 
     elementAvantVictoire = document.activeElement;
     $("victoire-photo").src = config.jeu.photos[photo];
     $("victoire-titre").textContent = "Bravo !";
-    $("victoire-texte").textContent = "Tu as trouvé une photo de Claire !";
+    $("victoire-texte").textContent = `Tu as trouvé une photo de Claire ! Te voilà inscrit au ${annonceLot}.`;
+    $("victoire-lot").hidden = !lot;
+    if (lot) {
+      $("victoire-lot").src = lot.image;
+      $("victoire-lot").alt = lot.nom;
+    }
     $("victoire-score").textContent = `Photos trouvées : ${trouvees} / ${total}`;
     montrer("victoire", true);
     $("victoire-fermer").focus();
@@ -515,21 +550,21 @@
     if (!sansAnimation) lancerFeuxDArtifice();
 
     if (modeDemo) {
-      $("victoire-texte").textContent = "Tu as trouvé une photo de Claire ! (Démo : rien n'est enregistré.)";
+      $("victoire-texte").textContent = `Tu as trouvé une photo de Claire ! Tu participerais au ${annonceLot}. (Démo : rien n'est enregistré.)`;
       return;
     }
     if (!foyerCourant) {
-      $("victoire-texte").textContent = "Tu as trouvé une photo de Claire ! Ouvre ton invitation avec ton code pour que ça compte.";
+      $("victoire-texte").textContent = `Tu as trouvé une photo de Claire ! Ouvre ton invitation avec ton code pour participer au ${annonceLot}.`;
       return;
     }
     try {
       const resultat = await signalerTrouvaille(photo);
       if (!resultat || !resultat.ok) throw new Error("refus");
-      $("victoire-texte").textContent = resultat.premier
-        ? "Tu es le premier à trouver cette photo : tu as gagné un lot ! 🎁"
-        : "Bien vu ! Mais quelqu'un l'a trouvée avant toi.";
+      $("victoire-texte").textContent = resultat.deja
+        ? `Déjà trouvée ! Tu es bien inscrit au ${annonceLot}.`
+        : `Tu as trouvé une photo de Claire ! Te voilà inscrit au ${annonceLot}. 🎁`;
     } catch {
-      $("victoire-texte").textContent = "Tu as trouvé une photo de Claire ! (Ta trouvaille n'a pas pu être enregistrée, réessaie plus tard.)";
+      $("victoire-texte").textContent = "Tu as trouvé une photo de Claire ! (Ta participation n'a pas pu être enregistrée, réessaie plus tard.)";
     }
   }
 
@@ -551,9 +586,6 @@
 
   // ---------- Démarrage ----------
 
-  photosTrouvees().forEach((photo) =>
-    document.querySelectorAll(`.cachette[data-photo="${photo}"]`).forEach((b) => b.classList.add("trouvee")),
-  );
   $("nom-mariee").textContent = config.mariee;
   $("nom-marie").textContent = config.marie;
   $("hero-lieu").textContent = config.lieu;

@@ -102,9 +102,7 @@
         <svg class="branche branche--bas" aria-hidden="true"><use href="#branche" /></svg>
         <div class="grange-cadre">
           <svg class="grange grange--fond" aria-hidden="true"><use href="#grange" /></svg>
-          <button type="button" class="cachette cachette--fenetre" data-photo="1" aria-label="Petite photo">
-            <img src="jeu/claire-1-mini.jpg" alt="" width="96" height="96" />
-          </button>
+          <button type="button" class="cachette cachette--fenetre" data-photo="1" tabindex="-1" aria-hidden="true"></button>
         </div>
       </header>
 
@@ -149,6 +147,15 @@
             <div class="infos" id="liste-infos"></div>
           </section>
 
+          <section aria-labelledby="titre-jeu">
+            <h2 class="titre-section" id="titre-jeu">Le jeu</h2>
+            <p class="sous-titre">
+              Trois photos de Claire sont cachées sur ce site, invisibles. Cliquez partout pour les trouver ! Chaque
+              photo trouvée vous inscrit au tirage au sort de son lot.
+            </p>
+            <div class="lots" id="liste-lots"></div>
+          </section>
+
           <section class="carte" aria-labelledby="titre-reponse">
             <h2 class="titre-section titre-section--carte" id="titre-reponse">Votre réponse</h2>
             <p class="sous-titre">Dites-nous qui sera là. Vous pourrez revenir modifier votre réponse avec le même lien.</p>
@@ -173,9 +180,7 @@
       <footer class="pied">
         <div class="branche-cadre">
           <svg class="branche branche--pied" aria-hidden="true"><use href="#branche" /></svg>
-          <button type="button" class="cachette cachette--baie" data-photo="3" aria-label="Petite photo">
-            <img src="jeu/claire-3-mini.jpg" alt="" width="96" height="96" />
-          </button>
+          <button type="button" class="cachette cachette--baie" data-photo="3" tabindex="-1" aria-hidden="true"></button>
         </div>
         <p>Avec tout notre amour, Claire &amp; Alex</p>
       </footer>
@@ -187,6 +192,7 @@
         <img class="victoire__photo" id="victoire-photo" alt="Claire" width="640" height="640" />
         <p class="victoire__titre" id="victoire-titre">Bravo !</p>
         <p class="victoire__texte" id="victoire-texte" role="status"></p>
+        <img class="victoire__lot" id="victoire-lot" alt="" height="120" />
         <p class="victoire__score" id="victoire-score"></p>
         <button type="button" class="bouton" id="victoire-fermer">Continuer</button>
       </div>
