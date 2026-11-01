@@ -16,12 +16,34 @@
   --police-script: "Pinyon Script", "Cormorant Garamond", cursive;
   --police-texte: "Jost", system-ui, sans-serif;
 
+  /* Le curseur du site, partout. Le point de clic est au centre du visage. */
+  --curseur: url("curseur.png") 16 16, auto;
+  --curseur-clic: url("curseur.png") 16 16, pointer;
+
   --rayon: 18px;
   --largeur: 46rem;
 }
 
 * {
   box-sizing: border-box;
+}
+
+html {
+  cursor: var(--curseur);
+}
+
+a,
+button,
+select,
+label {
+  cursor: var(--curseur-clic);
+}
+
+/* Là où l'on écrit, on garde le curseur de texte pour voir où l'on tape. */
+input[type="text"],
+input:not([type]),
+textarea {
+  cursor: text;
 }
 
 html {
@@ -387,7 +409,7 @@ button:focus-visible,
   opacity: 0;
   inset: 0;
   margin: 0;
-  cursor: pointer;
+  cursor: var(--curseur-clic);
 }
 
 .choix span {
@@ -396,7 +418,7 @@ button:focus-visible,
   border: 1px solid var(--trait);
   border-radius: 999px;
   background: #fff;
-  cursor: pointer;
+  cursor: var(--curseur-clic);
   transition: background 0.15s, border-color 0.15s, color 0.15s;
 }
 
@@ -436,7 +458,7 @@ button:focus-visible,
   color: #fff;
   font-weight: 400;
   letter-spacing: 0.05em;
-  cursor: pointer;
+  cursor: var(--curseur-clic);
   transition: background 0.15s;
 }
 
@@ -674,7 +696,7 @@ body.enveloppe-fermee {
   color: var(--creme);
   font-family: var(--police-script);
   font-size: 1.35rem;
-  cursor: pointer;
+  cursor: var(--curseur-clic);
   transition: transform 0.25s ease, opacity 0.3s ease;
 }
 
@@ -728,7 +750,7 @@ body.enveloppe-fermee {
   border-radius: 50%;
   overflow: hidden;
   background: none;
-  cursor: pointer;
+  cursor: var(--curseur-clic);
   transform: translate(-50%, -50%);
   -webkit-tap-highlight-color: transparent;
 }
