@@ -660,7 +660,7 @@ body.enveloppe-fermee {
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  padding-bottom: 9%;
+  padding-bottom: 4%;
 }
 
 .enveloppe__pour {
@@ -718,6 +718,96 @@ body.enveloppe-fermee {
   transition: opacity 0.3s;
 }
 
+/* La ficelle en raphia nouée autour de l'enveloppe : c'est elle qui ouvre. */
+.ficelle {
+  position: absolute;
+  z-index: 6;
+  inset: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  overflow: visible;
+  pointer-events: none; /* seuls les brins captent le clic, pas le rectangle */
+}
+
+.ficelle svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.ficelle__prise {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 22;
+  pointer-events: stroke;
+}
+
+.ficelle__corde {
+  fill: none;
+  stroke: #b38b5d;
+  stroke-width: 4;
+  stroke-linecap: round;
+  pointer-events: none;
+}
+
+.ficelle__torsade {
+  fill: none;
+  stroke: #8a6a44;
+  stroke-width: 4;
+  stroke-dasharray: 2 5;
+  pointer-events: none;
+}
+
+.ficelle__nodule {
+  fill: #8a6a44;
+  pointer-events: none;
+}
+
+.ficelle:focus-visible {
+  outline: 2px dashed var(--sauge-fonce);
+  outline-offset: 6px;
+}
+
+.ficelle__brin,
+.ficelle__noeud {
+  transition: transform 0.6s cubic-bezier(0.5, 0, 0.7, 0.4), opacity 0.6s ease;
+}
+
+.ficelle__noeud {
+  transform-origin: 222px 148px;
+}
+
+/* Tirée : le nœud se défait, les brins glissent et tombent. */
+.denouee .ficelle__noeud {
+  transform: scale(0) rotate(160deg);
+  opacity: 0;
+  transition-duration: 0.35s;
+}
+
+.denouee .ficelle__brin--h {
+  transform: translateX(-120%);
+  opacity: 0;
+  transition-delay: 0.2s;
+}
+
+.denouee .ficelle__brin--v {
+  transform: translateY(140%);
+  opacity: 0;
+  transition-delay: 0.25s;
+}
+
+.denouee .ficelle {
+  visibility: hidden;
+  transition: visibility 0s linear 0.9s;
+}
+
+/* Raté : l'enveloppe proteste. */
+.enveloppe.proteste {
+  animation: secousse 0.45s ease-in-out;
+}
+
 /* Ouverture : le sceau disparaît, le rabat bascule, la lettre sort, puis tout s'efface. */
 .ouverte .sceau,
 .ouverte .ouverture__aide {
@@ -737,7 +827,10 @@ body.enveloppe-fermee {
 @media (prefers-reduced-motion: reduce) {
   .ouverture,
   .lettre,
-  .enveloppe__rabat {
+  .enveloppe__rabat,
+  .ficelle__brin,
+  .ficelle__noeud,
+  .enveloppe.proteste {
     transition: none !important;
   }
 }
@@ -1016,5 +1109,118 @@ body.enveloppe-fermee {
   .victoire__titre,
   .secousse {
     animation: none !important;
+  }
+}
+
+/* ---------- Le parcours en étapes ---------- */
+.etapes ol {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin: 2rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Le trait qui relie les étapes, derrière les pastilles. */
+.etapes ol::before {
+  content: "";
+  position: absolute;
+  top: 1.05rem;
+  left: 12.5%;
+  right: 12.5%;
+  height: 1px;
+  background: var(--trait);
+}
+
+.etapes button {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--encre-douce);
+  font-size: 0.8125rem;
+  line-height: 1.25;
+}
+
+.etapes__numero {
+  display: grid;
+  place-items: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  border: 1px solid var(--trait);
+  border-radius: 50%;
+  background: var(--creme);
+  font-family: var(--police-titre);
+  font-size: 1.125rem;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.etapes button.faite .etapes__numero {
+  border-color: var(--sauge);
+  background: var(--sauge);
+  color: #fff;
+}
+
+.etapes button.courante {
+  color: var(--encre);
+  font-weight: 400;
+}
+
+.etapes button.courante .etapes__numero {
+  border-color: var(--terracotta);
+  background: var(--terracotta);
+  color: #fff;
+}
+
+.etapes button:focus-visible {
+  outline: 2px solid var(--sauge);
+  outline-offset: 4px;
+  border-radius: 8px;
+}
+
+.etape {
+  animation: entree-etape 0.35s ease both;
+}
+
+.etape > .titre-section:focus {
+  outline: none;
+}
+
+.navigation-etapes {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: 2rem 0 0;
+}
+
+.navigation-etapes .bouton[hidden] {
+  display: none;
+}
+
+/* Sans « Précédent », « Suivant » reste à droite. */
+#etape-suivante {
+  margin-left: auto;
+}
+
+@keyframes entree-etape {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .etape {
+    animation: none;
   }
 }

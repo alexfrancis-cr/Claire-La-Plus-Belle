@@ -228,6 +228,54 @@
     $("message").value = foyer.message || "";
   }
 
+  // ---------- Le parcours en étapes ----------
+
+  const ETAPES = ["jeu", "programme", "infos", "reponse"];
+
+  function nomEtape(etape) {
+    return document.querySelector(`#etapes [data-aller="${etape}"] .etapes__nom`).textContent;
+  }
+
+  function allerA(etape, options = { focus: true }) {
+    const rang = ETAPES.indexOf(etape);
+    document.querySelectorAll(".etape").forEach((section) => {
+      section.hidden = section.dataset.etape !== etape;
+    });
+    document.querySelectorAll("#etapes button").forEach((bouton) => {
+      const sonRang = ETAPES.indexOf(bouton.dataset.aller);
+      bouton.classList.toggle("courante", sonRang === rang);
+      bouton.classList.toggle("faite", sonRang < rang);
+      if (sonRang === rang) bouton.setAttribute("aria-current", "step");
+      else bouton.removeAttribute("aria-current");
+    });
+
+    const precedente = ETAPES[rang - 1];
+    const suivante = ETAPES[rang + 1];
+    $("etape-precedente").hidden = !precedente;
+    $("etape-suivante").hidden = !suivante;
+    if (suivante) $("etape-suivante").textContent = `Suivant : ${nomEtape(suivante)} →`;
+
+    if (options.focus) {
+      const titre = document.querySelector(`.etape[data-etape="${etape}"] .titre-section`);
+      titre.setAttribute("tabindex", "-1");
+      titre.focus({ preventScroll: true });
+      $("etapes").scrollIntoView({ behavior: sansAnimation ? "auto" : "smooth", block: "start" });
+    }
+  }
+
+  function etapeVoisine(decalage) {
+    const courante = document.querySelector(".etape:not([hidden])").dataset.etape;
+    const cible = ETAPES[ETAPES.indexOf(courante) + decalage];
+    if (cible) allerA(cible);
+  }
+
+  $("etapes").addEventListener("click", (evenement) => {
+    const bouton = evenement.target.closest("[data-aller]");
+    if (bouton) allerA(bouton.dataset.aller);
+  });
+  $("etape-precedente").addEventListener("click", () => etapeVoisine(-1));
+  $("etape-suivante").addEventListener("click", () => etapeVoisine(1));
+
   function afficherFoyer(foyer) {
     foyerCourant = foyer;
     const evenements = evenementsDuFoyer(foyer);
@@ -246,6 +294,7 @@
     montrer("merci", dejaRepondu);
     if (dejaRepondu) $("merci-texte").textContent = "Nous avons bien votre réponse. Vous pouvez la modifier.";
 
+    allerA("jeu", { focus: false });
     montrer("section-code", false);
     montrer("contenu-invite", true);
   }
@@ -614,7 +663,34 @@
     else window.setTimeout(reveler, 2400);
   }
 
-  $("sceau").addEventListener("click", ouvrirLettre);
+  // Le piège : « Touchez le sceau » est faux. Le sceau fait protester
+  // l'enveloppe ; c'est la ficelle qu'il faut tirer.
+  const MESSAGES_RATES = [
+    "Raté ! Ce n'est pas là… 😏",
+    "Toujours pas ! Regardez bien l'enveloppe…",
+    "Indice : et cette ficelle, là ?",
+  ];
+  let rates = 0;
+
+  $("enveloppe").addEventListener("click", (evenement) => {
+    if (evenement.target.closest("#ficelle") || $("ouverture").classList.contains("ouverte")) return;
+    $("ouverture-aide").textContent = MESSAGES_RATES[Math.min(rates, MESSAGES_RATES.length - 1)];
+    rates += 1;
+    const enveloppe = $("enveloppe");
+    enveloppe.classList.remove("proteste");
+    void enveloppe.offsetWidth; // relance l'animation à chaque clic
+    enveloppe.classList.add("proteste");
+  });
+
+  $("ficelle").addEventListener("click", () => {
+    const enveloppe = $("enveloppe");
+    if (enveloppe.classList.contains("denouee")) return;
+    enveloppe.classList.add("denouee");
+    $("ouverture-aide").textContent = "Bien joué !";
+    // Le temps que le nœud se défasse et que la ficelle tombe.
+    if (sansAnimation) ouvrirLettre();
+    else window.setTimeout(ouvrirLettre, 800);
+  });
 
   const codeUrl = normaliserCode(new URLSearchParams(window.location.search).get("code"));
   if (codeUrl) ouvrir(codeUrl);

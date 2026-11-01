@@ -80,11 +80,34 @@
           <p class="enveloppe__pour" id="enveloppe-pour">Vous êtes invités</p>
         </div>
         <div class="enveloppe__rabat"></div>
-        <button type="button" class="sceau" id="sceau" aria-label="Ouvrir l'invitation">
+        <!-- Le piège : le sceau n'ouvre rien. C'est la ficelle qu'il faut tirer. -->
+        <button type="button" class="sceau" id="sceau" aria-label="Le sceau">
           <span aria-hidden="true">C&amp;A</span>
         </button>
+        <button type="button" class="ficelle" id="ficelle" aria-label="Tirer sur la ficelle pour ouvrir l'invitation">
+          <svg viewBox="0 0 300 200" aria-hidden="true">
+            <g class="ficelle__brin ficelle__brin--h">
+              <path class="ficelle__prise" d="M-8 148 H308" />
+              <path class="ficelle__corde" d="M-8 148 H308" />
+              <path class="ficelle__torsade" d="M-8 148 H308" />
+            </g>
+            <g class="ficelle__brin ficelle__brin--v">
+              <path class="ficelle__prise" d="M222 -8 V208" />
+              <path class="ficelle__corde" d="M222 -8 V208" />
+              <path class="ficelle__torsade" d="M222 -8 V208" />
+            </g>
+            <g class="ficelle__noeud">
+              <path class="ficelle__prise" d="M222 148 C200 124 182 138 194 152 C204 162 216 156 222 148 C244 124 262 138 250 152 C240 162 228 156 222 148" />
+              <path class="ficelle__corde" d="M222 148 C200 124 182 138 194 152 C204 162 216 156 222 148" />
+              <path class="ficelle__corde" d="M222 148 C244 124 262 138 250 152 C240 162 228 156 222 148" />
+              <path class="ficelle__corde" d="M222 148 C214 162 207 172 200 186" />
+              <path class="ficelle__corde" d="M222 148 C231 163 237 173 246 187" />
+              <circle class="ficelle__nodule" cx="222" cy="148" r="5" />
+            </g>
+          </svg>
+        </button>
       </div>
-      <p class="ouverture__aide">Touchez le sceau pour ouvrir</p>
+      <p class="ouverture__aide" id="ouverture-aide" role="status">Touchez le sceau pour ouvrir</p>
     </div>
 
     <div id="site" inert>
@@ -134,20 +157,20 @@
         <p class="chargement" id="chargement" hidden role="status">Un instant…</p>
 
         <!-- Avec un code valide : tout le reste, filtré pour ce foyer. -->
+        <!-- Avec un code valide : le parcours en quatre étapes, filtré pour ce foyer. -->
         <div id="contenu-invite" hidden>
           <p class="accueil" id="accueil"></p>
 
-          <section aria-labelledby="titre-programme">
-            <h2 class="titre-section" id="titre-programme">Le programme</h2>
-            <div class="evenements" id="liste-evenements"></div>
-          </section>
+          <nav class="etapes" aria-label="Étapes">
+            <ol id="etapes">
+              <li><button type="button" data-aller="jeu"><span class="etapes__numero">1</span><span class="etapes__nom">Le jeu</span></button></li>
+              <li><button type="button" data-aller="programme"><span class="etapes__numero">2</span><span class="etapes__nom">Le programme</span></button></li>
+              <li><button type="button" data-aller="infos"><span class="etapes__numero">3</span><span class="etapes__nom">Infos pratiques</span></button></li>
+              <li><button type="button" data-aller="reponse"><span class="etapes__numero">4</span><span class="etapes__nom">Votre réponse</span></button></li>
+            </ol>
+          </nav>
 
-          <section aria-labelledby="titre-infos">
-            <h2 class="titre-section" id="titre-infos">Infos pratiques</h2>
-            <div class="infos" id="liste-infos"></div>
-          </section>
-
-          <section aria-labelledby="titre-jeu">
+          <section class="etape" data-etape="jeu" aria-labelledby="titre-jeu">
             <h2 class="titre-section" id="titre-jeu">Le jeu</h2>
             <p class="sous-titre">
               Trois photos de Claire sont cachées sur ce site, invisibles. Cliquez partout pour les trouver ! Chaque
@@ -156,7 +179,17 @@
             <div class="lots" id="liste-lots"></div>
           </section>
 
-          <section class="carte" aria-labelledby="titre-reponse">
+          <section class="etape" data-etape="programme" aria-labelledby="titre-programme" hidden>
+            <h2 class="titre-section" id="titre-programme">Le programme</h2>
+            <div class="evenements" id="liste-evenements"></div>
+          </section>
+
+          <section class="etape" data-etape="infos" aria-labelledby="titre-infos" hidden>
+            <h2 class="titre-section" id="titre-infos">Infos pratiques</h2>
+            <div class="infos" id="liste-infos"></div>
+          </section>
+
+          <section class="etape carte" data-etape="reponse" aria-labelledby="titre-reponse" hidden>
             <h2 class="titre-section titre-section--carte" id="titre-reponse">Votre réponse</h2>
             <p class="sous-titre">Dites-nous qui sera là. Vous pourrez revenir modifier votre réponse avec le même lien.</p>
             <form id="form-reponse" novalidate>
@@ -174,6 +207,11 @@
               <button type="button" class="bouton bouton--discret" id="bouton-modifier">Modifier ma réponse</button>
             </div>
           </section>
+
+          <div class="navigation-etapes">
+            <button type="button" class="bouton bouton--discret" id="etape-precedente">← Précédent</button>
+            <button type="button" class="bouton" id="etape-suivante">Suivant →</button>
+          </div>
         </div>
       </main>
 
