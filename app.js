@@ -10,6 +10,7 @@
   const PRECISER = "à préciser";
 
   const $ = (id) => document.getElementById(id);
+  const sansAnimation = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   let codeCourant = "";
   let foyerCourant = null;
 
@@ -123,7 +124,15 @@
     const ids = new Set(evenements.map((evenement) => evenement.id));
     const infos = config.infos.filter((info) => info.evenements.some((id) => ids.has(id)));
     $("liste-infos").replaceChildren(
-      ...infos.map((info) => el("div", { class: "info" }, el("h3", {}, info.titre), el("p", {}, info.texte))),
+      ...infos.map((info) =>
+        el(
+          "div",
+          { class: "info" },
+          el("h3", {}, info.titre),
+          el("p", {}, info.texte),
+          info.photoCachee ? cachette(info.photoCachee) : null,
+        ),
+      ),
     );
   }
 
@@ -350,8 +359,201 @@
     $("personnes").querySelector("input, select")?.focus();
   });
 
+  // ---------- Le jeu : trois photos de Claire cachées ----------
+
+  function cachette(photo) {
+    const bouton = el(
+      "button",
+      { type: "button", class: "cachette cachette--info", "data-photo": photo, "aria-label": "Petite photo" },
+      el("img", { src: `jeu/claire-${photo}-mini.jpg`, alt: "", width: "96", height: "96" }),
+    );
+    if (photosTrouvees().has(photo)) bouton.classList.add("trouvee");
+    return bouton;
+  }
+
+  // Mémoire locale de ce navigateur, juste pour le compteur « 2 / 3 ».
+  // Le classement qui compte est dans le Google Sheet.
+  function photosTrouvees() {
+    try {
+      return new Set(JSON.parse(window.localStorage.getItem("photos-trouvees") || "[]"));
+    } catch {
+      return new Set();
+    }
+  }
+
+  function noterPhoto(photo) {
+    const trouvees = photosTrouvees();
+    trouvees.add(photo);
+    try {
+      window.localStorage.setItem("photos-trouvees", JSON.stringify([...trouvees]));
+    } catch {
+      // Navigateur sans stockage : le compteur repartira de zéro, sans gravité.
+    }
+    return trouvees.size;
+  }
+
+  async function signalerTrouvaille(photo) {
+    if (modeDemo || !codeCourant || !foyerCourant) return null;
+    const reponse = await fetch(config.apiUrl, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ action: "trouve", code: codeCourant, photo }),
+    });
+    if (!reponse.ok) throw new Error("HTTP " + reponse.status);
+    return reponse.json();
+  }
+
+  // Feu d'artifice et confettis sur un canvas plein écran, sans bibliothèque.
+  const COULEURS = ["#c0714f", "#e0a96d", "#7d8f6a", "#f2d0a4", "#d95d39", "#f7f1e6", "#e6b422", "#9bb08a"];
+  let particules = [];
+  let animation = 0;
+
+  function exploser(canvas, x, y, nombre) {
+    for (let i = 0; i < nombre; i += 1) {
+      const angle = Math.random() * Math.PI * 2;
+      const vitesse = 2 + Math.random() * 7;
+      particules.push({
+        x,
+        y,
+        vx: Math.cos(angle) * vitesse,
+        vy: Math.sin(angle) * vitesse - 1.5,
+        vie: 60 + Math.random() * 50,
+        age: 0,
+        taille: 2 + Math.random() * 3,
+        couleur: COULEURS[Math.floor(Math.random() * COULEURS.length)],
+        confetti: false,
+      });
+    }
+  }
+
+  function pleuvoirConfettis(canvas, nombre) {
+    for (let i = 0; i < nombre; i += 1) {
+      particules.push({
+        x: Math.random() * canvas.width,
+        y: -20 - Math.random() * canvas.height * 0.5,
+        vx: (Math.random() - 0.5) * 3,
+        vy: 2 + Math.random() * 3,
+        vie: 260,
+        age: 0,
+        taille: 5 + Math.random() * 6,
+        couleur: COULEURS[Math.floor(Math.random() * COULEURS.length)],
+        confetti: true,
+        rotation: Math.random() * Math.PI,
+        spin: (Math.random() - 0.5) * 0.3,
+      });
+    }
+  }
+
+  function lancerFeuxDArtifice() {
+    const canvas = $("feux");
+    const ratio = window.devicePixelRatio || 1;
+    canvas.width = window.innerWidth * ratio;
+    canvas.height = window.innerHeight * ratio;
+    const contexte = canvas.getContext("2d");
+    particules = [];
+    window.cancelAnimationFrame(animation);
+
+    const salves = 9;
+    for (let i = 0; i < salves; i += 1) {
+      window.setTimeout(() => {
+        exploser(canvas, canvas.width * (0.15 + Math.random() * 0.7), canvas.height * (0.15 + Math.random() * 0.45), 90 * ratio);
+      }, i * 280);
+    }
+    pleuvoirConfettis(canvas, 160);
+
+    const image = () => {
+      contexte.clearRect(0, 0, canvas.width, canvas.height);
+      particules = particules.filter((p) => p.age < p.vie);
+      for (const p of particules) {
+        p.age += 1;
+        p.x += p.vx * ratio;
+        p.y += p.vy * ratio;
+        if (p.confetti) {
+          p.vx *= 0.99;
+          p.rotation += p.spin;
+        } else {
+          p.vx *= 0.97;
+          p.vy = p.vy * 0.97 + 0.12;
+        }
+        contexte.globalAlpha = Math.max(0, 1 - p.age / p.vie);
+        contexte.fillStyle = p.couleur;
+        if (p.confetti) {
+          contexte.save();
+          contexte.translate(p.x, p.y);
+          contexte.rotate(p.rotation);
+          contexte.fillRect((-p.taille * ratio) / 2, (-p.taille * ratio) / 4, p.taille * ratio, (p.taille * ratio) / 2);
+          contexte.restore();
+        } else {
+          contexte.beginPath();
+          contexte.arc(p.x, p.y, p.taille * ratio * (1 - p.age / p.vie / 2), 0, Math.PI * 2);
+          contexte.fill();
+        }
+      }
+      contexte.globalAlpha = 1;
+      if (particules.length) animation = window.requestAnimationFrame(image);
+    };
+    animation = window.requestAnimationFrame(image);
+  }
+
+  let elementAvantVictoire = null;
+
+  async function victoire(bouton) {
+    const photo = bouton.dataset.photo;
+    const total = Object.keys(config.jeu.photos).length;
+    const trouvees = noterPhoto(photo);
+    document.querySelectorAll(`.cachette[data-photo="${photo}"]`).forEach((b) => b.classList.add("trouvee"));
+
+    elementAvantVictoire = document.activeElement;
+    $("victoire-photo").src = config.jeu.photos[photo];
+    $("victoire-titre").textContent = "Bravo !";
+    $("victoire-texte").textContent = "Tu as trouvé une photo de Claire !";
+    $("victoire-score").textContent = `Photos trouvées : ${trouvees} / ${total}`;
+    montrer("victoire", true);
+    $("victoire-fermer").focus();
+    $("site").classList.add("secousse");
+    window.setTimeout(() => $("site").classList.remove("secousse"), 600);
+    if (!sansAnimation) lancerFeuxDArtifice();
+
+    if (modeDemo) {
+      $("victoire-texte").textContent = "Tu as trouvé une photo de Claire ! (Démo : rien n'est enregistré.)";
+      return;
+    }
+    if (!foyerCourant) {
+      $("victoire-texte").textContent = "Tu as trouvé une photo de Claire ! Ouvre ton invitation avec ton code pour que ça compte.";
+      return;
+    }
+    try {
+      const resultat = await signalerTrouvaille(photo);
+      if (!resultat || !resultat.ok) throw new Error("refus");
+      $("victoire-texte").textContent = resultat.premier
+        ? "Tu es le premier à trouver cette photo : tu as gagné un lot ! 🎁"
+        : "Bien vu ! Mais quelqu'un l'a trouvée avant toi.";
+    } catch {
+      $("victoire-texte").textContent = "Tu as trouvé une photo de Claire ! (Ta trouvaille n'a pas pu être enregistrée, réessaie plus tard.)";
+    }
+  }
+
+  function fermerVictoire() {
+    montrer("victoire", false);
+    window.cancelAnimationFrame(animation);
+    particules = [];
+    if (elementAvantVictoire && typeof elementAvantVictoire.focus === "function") elementAvantVictoire.focus();
+  }
+
+  document.addEventListener("click", (evenement) => {
+    const bouton = evenement.target.closest(".cachette");
+    if (bouton) victoire(bouton);
+  });
+  $("victoire-fermer").addEventListener("click", fermerVictoire);
+  document.addEventListener("keydown", (evenement) => {
+    if (evenement.key === "Escape" && !$("victoire").hidden) fermerVictoire();
+  });
+
   // ---------- Démarrage ----------
 
+  photosTrouvees().forEach((photo) =>
+    document.querySelectorAll(`.cachette[data-photo="${photo}"]`).forEach((b) => b.classList.add("trouvee")),
+  );
   $("nom-mariee").textContent = config.mariee;
   $("nom-marie").textContent = config.marie;
   $("hero-lieu").textContent = config.lieu;
@@ -359,7 +561,6 @@
 
   // ---------- La lettre ----------
 
-  const sansAnimation = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   function ouvrirLettre() {
     const ouverture = $("ouverture");

@@ -512,11 +512,16 @@ button:focus-visible,
 }
 
 /* Le Coco Barn sert de socle à l'en-tête, sous le texte, jamais derrière. */
-.grange--fond {
+.grange-cadre {
+  position: relative;
   width: min(30rem, 100%);
+  margin: -0.5rem auto -2.5rem;
+}
+
+.grange--fond {
+  width: 100%;
   height: auto;
   aspect-ratio: 2 / 1;
-  margin: -0.5rem auto -2.5rem;
   opacity: 0.22;
   pointer-events: none;
 }
@@ -712,5 +717,196 @@ body.enveloppe-fermee {
   .lettre,
   .enveloppe__rabat {
     transition: none !important;
+  }
+}
+
+/* ---------- Le jeu : trois photos de Claire cachées ---------- */
+.cachette {
+  position: absolute;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  background: none;
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cachette img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: sepia(0.35) saturate(0.85);
+  opacity: 0.85;
+}
+
+.cachette:focus-visible {
+  outline: 2px solid var(--terracotta);
+  outline-offset: 2px;
+}
+
+.cachette.trouvee {
+  box-shadow: 0 0 0 2px var(--terracotta);
+}
+
+/* La fenêtre ronde de la grange : centre (200, 74), rayon 13 dans un dessin de 400 × 200. */
+.cachette--fenetre {
+  left: 50%;
+  top: 37%;
+  width: 6.5%;
+  aspect-ratio: 1;
+}
+
+.branche-cadre {
+  position: relative;
+  width: 9rem;
+  margin: 0 auto;
+}
+
+.branche-cadre .branche--pied {
+  width: 100%;
+}
+
+/* Une baie de la branche : centre (206, 24) dans un dessin de 240 × 60. */
+.cachette--baie {
+  left: 85.8%;
+  top: 40%;
+  width: 0.95rem;
+  aspect-ratio: 1;
+}
+
+/* Dans une carte d'infos pratiques : un petit timbre rond dans le coin. */
+.info {
+  position: relative;
+}
+
+.cachette--info {
+  left: auto;
+  right: 0.35rem;
+  top: 0.35rem;
+  width: 1.05rem;
+  aspect-ratio: 1;
+  transform: none;
+}
+
+/* ---------- Victoire ---------- */
+.victoire {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(61, 58, 51, 0.55);
+  backdrop-filter: blur(2px);
+}
+
+.victoire[hidden] {
+  display: none;
+}
+
+.victoire__feux {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.victoire__carte {
+  position: relative;
+  width: min(22rem, 100%);
+  padding: 1.75rem 1.5rem 1.5rem;
+  border-radius: var(--rayon);
+  background: var(--papier);
+  text-align: center;
+  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.5);
+  animation: apparition 0.7s cubic-bezier(0.2, 1.6, 0.4, 1) both;
+}
+
+.victoire__photo {
+  display: block;
+  width: 9rem;
+  height: 9rem;
+  margin: -4.5rem auto 0.75rem;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid var(--papier);
+  box-shadow: 0 0 0 3px var(--terracotta), 0 10px 30px rgba(0, 0, 0, 0.3);
+  animation: tourbillon 0.9s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+
+.victoire__titre {
+  margin: 0;
+  font-family: var(--police-script);
+  font-size: 3.5rem;
+  line-height: 1.1;
+  color: var(--terracotta);
+  animation: battement 1.2s ease-in-out 0.7s infinite;
+}
+
+.victoire__texte {
+  margin: 0.5rem 0 0.25rem;
+  font-size: 1.125rem;
+  font-weight: 400;
+}
+
+.victoire__score {
+  margin: 0 0 1.25rem;
+  font-size: 0.875rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--sauge-fonce);
+}
+
+.secousse {
+  animation: secousse 0.5s ease-in-out;
+}
+
+@keyframes apparition {
+  from {
+    transform: scale(0.3) rotate(-8deg);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@keyframes tourbillon {
+  from {
+    transform: scale(0) rotate(-540deg);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes battement {
+  50% {
+    transform: scale(1.08);
+  }
+}
+
+@keyframes secousse {
+  20%,
+  60% {
+    transform: translate(-6px, 3px) rotate(-0.6deg);
+  }
+  40%,
+  80% {
+    transform: translate(6px, -3px) rotate(0.6deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .victoire__carte,
+  .victoire__photo,
+  .victoire__titre,
+  .secousse {
+    animation: none !important;
   }
 }

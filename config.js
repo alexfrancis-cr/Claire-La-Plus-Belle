@@ -44,6 +44,7 @@ window.MARIAGE = {
       titre: "Tenue",
       evenements: ["arrivee", "mariage"],
       texte: "À venir.",
+      photoCachee: "2", // le jeu : une photo de Claire cachée dans ce bloc
     },
     {
       titre: "Liste de mariage",
@@ -51,6 +52,17 @@ window.MARIAGE = {
       texte: "À venir.",
     },
   ],
+
+  // Le jeu : trois petites photos de Claire cachées sur le site. Le premier
+  // foyer qui trouve une photo gagne un lot (enregistré dans le Google Sheet,
+  // feuille « Trouvailles »).
+  jeu: {
+    photos: {
+      1: "jeu/claire-1.jpg",
+      2: "jeu/claire-2.jpg",
+      3: "jeu/claire-3.jpg",
+    },
+  },
 
   regimes: [
     "Aucun",

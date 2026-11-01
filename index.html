@@ -100,7 +100,12 @@
         <p class="hero__dates" id="hero-dates"></p>
         <p class="hero__lieu" id="hero-lieu">Hossegor</p>
         <svg class="branche branche--bas" aria-hidden="true"><use href="#branche" /></svg>
-        <svg class="grange grange--fond" aria-hidden="true"><use href="#grange" /></svg>
+        <div class="grange-cadre">
+          <svg class="grange grange--fond" aria-hidden="true"><use href="#grange" /></svg>
+          <button type="button" class="cachette cachette--fenetre" data-photo="1" aria-label="Petite photo">
+            <img src="jeu/claire-1-mini.jpg" alt="" width="96" height="96" />
+          </button>
+        </div>
       </header>
 
       <main>
@@ -166,9 +171,25 @@
       </main>
 
       <footer class="pied">
-        <svg class="branche branche--pied" aria-hidden="true"><use href="#branche" /></svg>
+        <div class="branche-cadre">
+          <svg class="branche branche--pied" aria-hidden="true"><use href="#branche" /></svg>
+          <button type="button" class="cachette cachette--baie" data-photo="3" aria-label="Petite photo">
+            <img src="jeu/claire-3-mini.jpg" alt="" width="96" height="96" />
+          </button>
+        </div>
         <p>Avec tout notre amour, Claire &amp; Alex</p>
       </footer>
+    </div>
+
+    <div class="victoire" id="victoire" hidden role="dialog" aria-modal="true" aria-labelledby="victoire-titre">
+      <canvas class="victoire__feux" id="feux" aria-hidden="true"></canvas>
+      <div class="victoire__carte">
+        <img class="victoire__photo" id="victoire-photo" alt="Claire" width="640" height="640" />
+        <p class="victoire__titre" id="victoire-titre">Bravo !</p>
+        <p class="victoire__texte" id="victoire-texte" role="status"></p>
+        <p class="victoire__score" id="victoire-score"></p>
+        <button type="button" class="bouton" id="victoire-fermer">Continuer</button>
+      </div>
     </div>
 
     <script src="config.js"></script>
