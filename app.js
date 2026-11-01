@@ -100,19 +100,33 @@
     $("hero-dates").replaceChildren(...config.periode.flatMap((ligne, index) => (index ? [el("br"), ligne] : [ligne])));
   }
 
+  // Le programme : une frise verticale, un moment par ligne (pensé pour téléphone).
   function afficherProgramme(evenements) {
     $("liste-evenements").replaceChildren(
-      ...evenements.map((evenement) =>
-        el(
-          "article",
-          { class: "evenement" },
-          el("h3", { class: "evenement__nom" }, evenement.nom),
-          el("p", { class: "evenement__date" }, evenement.dateTexte),
-          el("p", { class: "evenement__lieu" }, config.annee),
-          evenement.horaires ? el("p", { class: "evenement__horaires" }, evenement.horaires) : null,
-          evenement.carte
-            ? el("a", { class: "lien", href: evenement.carte, target: "_blank", rel: "noopener" }, "Voir sur la carte")
-            : null,
+      el(
+        "ol",
+        { class: "frise" },
+        ...evenements.map((evenement) =>
+          el(
+            "li",
+            { class: "frise__moment" },
+            el(
+              "p",
+              { class: "frise__date", "aria-hidden": "true" },
+              el("span", { class: "frise__jour" }, evenement.jour),
+              el("span", { class: "frise__mois" }, evenement.mois),
+            ),
+            el(
+              "div",
+              { class: "frise__texte" },
+              el("p", { class: "frise__semaine" }, `${evenement.dateTexte} ${config.annee}`),
+              el("h3", { class: "frise__nom" }, evenement.nom),
+              evenement.horaires ? el("p", { class: "frise__horaires" }, evenement.horaires) : null,
+              evenement.carte
+                ? el("a", { class: "lien", href: evenement.carte, target: "_blank", rel: "noopener" }, "Voir sur la carte")
+                : null,
+            ),
+          ),
         ),
       ),
     );
