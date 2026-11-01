@@ -6,6 +6,8 @@ window.MARIAGE = {
   lieu: "Angresse",
   // Affiché sous vos noms, sur le premier écran.
   periode: ["Du vendredi 23", "au dimanche 25 juillet 2027"],
+  // Pour le compte à rebours.
+  dateMariage: "2027-07-24",
   annee: "2027",
 
   // Adresse de l'application Google Apps Script (voir apps-script/README.md).

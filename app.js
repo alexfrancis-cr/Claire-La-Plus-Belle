@@ -96,6 +96,16 @@
   }
 
   // Sous vos noms : la période du week-end (« Du vendredi 23 au dimanche 25 juillet 2027 »).
+  // Le compte à rebours jusqu'au mariage, en jours.
+  function afficherCompte() {
+    const mariage = new Date(config.dateMariage + "T00:00:00");
+    const aujourdhui = new Date();
+    aujourdhui.setHours(0, 0, 0, 0);
+    const jours = Math.round((mariage - aujourdhui) / 86_400_000);
+    $("compte-jours").textContent =
+      jours > 1 ? `Plus que ${jours} jours` : jours === 1 ? "C'est demain !" : jours === 0 ? "C'est aujourd'hui !" : "Merci d'avoir été là";
+  }
+
   function afficherEnTete() {
     $("hero-dates").replaceChildren(...config.periode.flatMap((ligne, index) => (index ? [el("br"), ligne] : [ligne])));
   }
@@ -304,6 +314,7 @@
     $("accueil").textContent = prenoms.length ? `Bonjour ${joindre(prenoms)} !` : "Bonjour !";
     if (prenoms.length) $("enveloppe-pour").textContent = `Pour ${joindre(prenoms)}`;
     afficherEnTete();
+    afficherCompte();
     afficherProgramme(evenements);
     afficherInfos(evenements);
     afficherLots();
@@ -342,7 +353,7 @@
     const passerALaLettre = () => {
       acces.hidden = true;
       montrer("ouverture", true);
-      $("sceau").focus({ preventScroll: true });
+      $("medaillon").focus({ preventScroll: true });
     };
     // Le temps de lire « Bienvenue » et de voir le cadenas s'ouvrir.
     if (sansAnimation) passerALaLettre();
@@ -536,7 +547,8 @@
   }
 
   // Feu d'artifice et confettis sur un canvas plein écran, sans bibliothèque.
-  const COULEURS = ["#c0714f", "#e0a96d", "#7d8f6a", "#f2d0a4", "#d95d39", "#f7f1e6", "#e6b422", "#9bb08a"];
+  // Les couleurs du vitrail : or, nacre, rose poudré, sauge.
+  const COULEURS = ["#b48a4f", "#e9c98f", "#d9b77a", "#e3bfb0", "#f6e4dc", "#cfd9c2", "#8fa27f", "#fbf7f1"];
   let particules = [];
   let animation = 0;
 
@@ -713,45 +725,19 @@
       reveler();
       return;
     }
-    // Le rythme suit styles.css : le rabat bascule (0,75 s), la lettre sort
-    // à partir de 0,42 s ; le feu d'artifice part quand elle émerge, puis
+    // Le rythme suit styles.css : le médaillon s'efface, les battants
+    // s'ouvrent (1,1 s) ; le feu d'artifice part quand ils s'écartent, puis
     // fondu vers le site.
-    window.setTimeout(() => lancerFeuxDArtifice({ salves: 7, confettis: 120 }), 650);
+    window.setTimeout(() => lancerFeuxDArtifice({ salves: 7, confettis: 120 }), 450);
     window.setTimeout(() => {
       $("site").classList.add("apparait");
       ouverture.classList.add("fin");
-    }, 1550);
-    window.setTimeout(reveler, 2150);
+    }, 1150);
+    window.setTimeout(reveler, 1750);
   }
 
-  // Le piège : « Touchez le sceau » est faux. Le sceau fait protester
-  // l'enveloppe ; c'est la ficelle qu'il faut tirer.
-  const MESSAGES_RATES = [
-    "Raté ! Ce n'est pas là… 😏",
-    "Toujours pas ! Regardez bien l'enveloppe…",
-    "Indice : et cette ficelle, là ?",
-  ];
-  let rates = 0;
-
-  $("enveloppe").addEventListener("click", (evenement) => {
-    if (evenement.target.closest("#ficelle") || $("ouverture").classList.contains("ouverte")) return;
-    $("ouverture-aide").textContent = MESSAGES_RATES[Math.min(rates, MESSAGES_RATES.length - 1)];
-    rates += 1;
-    const enveloppe = $("enveloppe");
-    enveloppe.classList.remove("proteste");
-    void enveloppe.offsetWidth; // relance l'animation à chaque clic
-    enveloppe.classList.add("proteste");
-  });
-
-  $("ficelle").addEventListener("click", () => {
-    const enveloppe = $("enveloppe");
-    if (enveloppe.classList.contains("denouee")) return;
-    enveloppe.classList.add("denouee");
-    $("ouverture-aide").textContent = "Bien joué !";
-    // Le temps que le nœud se défasse et que la ficelle tombe.
-    if (sansAnimation) ouvrirLettre();
-    else window.setTimeout(ouvrirLettre, 550);
-  });
+  // Toucher le médaillon ouvre la porte en vitrail.
+  $("medaillon").addEventListener("click", ouvrirLettre);
 
   // Le lien personnel pré-remplit le code ; l'invité valide lui-même l'accès.
   montrer("acces-demo", modeDemo);
