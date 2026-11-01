@@ -1554,63 +1554,6 @@ path.acces__serrure {
   }
 }
 
-/* La page secrète : un écran sombre, complice. */
-.ecran--secret {
-  width: 100%;
-  max-width: none;
-  background: radial-gradient(circle at 50% 30%, #4d5c43, #232a20 75%);
-  color: var(--creme);
-}
-
-.secret__surtitre {
-  margin: 0;
-  font-size: 0.8125rem;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: #e6a77f;
-}
-
-.secret__titre {
-  margin: 0.25rem 0 0;
-  font-family: var(--police-script);
-  font-weight: 400;
-  font-size: clamp(2.5rem, 8vh, 3.75rem);
-  line-height: 1.1;
-}
-
-.secret__texte {
-  margin: 0;
-  font-size: 1.125rem;
-}
-
-.secret__code {
-  margin: 0.25rem 0;
-  padding: 0.75rem 1.25rem;
-  border: 1px dashed rgba(247, 241, 230, 0.5);
-  border-radius: 12px;
-  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  font-size: clamp(1.5rem, 5vh, 2.25rem);
-  letter-spacing: 0.3em;
-  user-select: all;
-}
-
-.ecran--secret .bouton {
-  margin-top: 0.75rem;
-  background: var(--terracotta);
-  text-decoration: none;
-}
-
-.secret__chut {
-  margin: 0.5rem 0 0;
-  font-style: italic;
-  font-size: 0.875rem;
-  color: rgba(247, 241, 230, 0.6);
-}
-
-.ecran--secret .ecran__suite {
-  color: rgba(247, 241, 230, 0.6);
-}
-
 @media (prefers-reduced-motion: reduce) {
   .lot__rarete {
     animation: none;

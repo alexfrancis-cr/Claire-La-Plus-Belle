@@ -57,7 +57,6 @@
         foyer: {
           personnes: foyer.personnes.map((personne) => ({ ...personne, reponse: null })),
           message: "",
-          blague: foyer.blague,
         },
       };
     }
@@ -226,34 +225,14 @@
     $("message").value = foyer.message || "";
   }
 
-  // ---------- La page secrète ----------
-
-  function afficherBlague(foyer) {
-    const blague = foyer.blague;
-    ETAPES = blague ? ["blague", "mariage", "infos", "jeu", "invites"] : ["mariage", "infos", "jeu", "invites"];
-    if (!blague) return;
-    const prenom = foyer.personnes.map((personne) => personne.prenom).find(Boolean) || "toi";
-    // « de Quentin », mais « d'Anatole » devant une voyelle ou un h.
-    const de = /^[aeiouyhàâäéèêëîïôöûüœ]/i.test(blague.prenom) ? "d'" : "de ";
-    $("titre-blague").textContent = `Tiens ${prenom},`;
-    $("blague-texte").replaceChildren("voici le code ", de, el("strong", {}, blague.prenom), " :");
-    $("blague-code").textContent = blague.code;
-    $("blague-lien").textContent = `Ouvrir l'invitation ${de}${blague.prenom} →`;
-    const url = new URL(window.location.href);
-    url.searchParams.set("code", blague.code);
-    $("blague-lien").href = url.toString();
-  }
-
   // ---------- Le parcours en étapes ----------
 
   // Les étapes 0 (accès) et 1 (la lettre) sont des écrans à part ; ensuite,
   // quatre écrans plein écran. Sur les écrans « au toucher », toucher l'écran
   // fait passer au suivant. Pas sur le jeu (on y clique partout pour chercher)
   // ni sur le formulaire.
-  // L'écran secret de la blague s'ajoute en tête, seulement pour les foyers
-  // qui en ont une (voir afficherBlague).
-  let ETAPES = ["mariage", "infos", "jeu", "invites"];
-  const AU_TOUCHER = new Set(["blague", "mariage", "infos"]);
+  const ETAPES = ["mariage", "infos", "jeu", "invites"];
+  const AU_TOUCHER = new Set(["mariage", "infos"]);
   const INTERACTIF = "a, button, input, select, textarea, label, .cachette";
 
   function etapeCourante() {
@@ -314,7 +293,6 @@
     afficherProgramme(evenements);
     afficherInfos(evenements);
     afficherLots();
-    afficherBlague(foyer);
     afficherFormulaire(foyer);
 
     const dejaRepondu = foyer.personnes.some((personne) => personne.reponse);
