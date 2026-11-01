@@ -130,7 +130,6 @@
           { class: "info" },
           el("h4", {}, info.titre),
           el("p", {}, info.texte),
-          info.photoCachee ? cachette(info.photoCachee) : null,
         ),
       ),
     );
@@ -230,13 +229,16 @@
 
   // ---------- Le parcours en étapes ----------
 
-  // Les étapes 0 (accès) et 1 (la lettre) sont des écrans à part ;
-  // celles-ci sont les pages du site, une par écran, sans fil d'étapes affiché.
-  const ETAPES = ["mariage", "jeu", "invites"];
-  const NOMS_ETAPES = { mariage: "Le mariage", jeu: "Le jeu", invites: "Vos infos" };
+  // Les étapes 0 (accès) et 1 (la lettre) sont des écrans à part ; ensuite,
+  // quatre écrans plein écran. Sur les écrans « au toucher », toucher l'écran
+  // fait passer au suivant. Pas sur le jeu (on y clique partout pour chercher)
+  // ni sur le formulaire.
+  const ETAPES = ["mariage", "infos", "jeu", "invites"];
+  const AU_TOUCHER = new Set(["mariage", "infos"]);
+  const INTERACTIF = "a, button, input, select, textarea, label, .cachette";
 
-  function nomEtape(etape) {
-    return NOMS_ETAPES[etape];
+  function etapeCourante() {
+    return document.querySelector(".etape:not([hidden])")?.dataset.etape;
   }
 
   function allerA(etape, options = { focus: true }) {
@@ -245,30 +247,42 @@
       section.hidden = section.dataset.etape !== etape;
     });
 
-    const precedente = ETAPES[rang - 1];
-    const suivante = ETAPES[rang + 1];
-    $("etape-precedente").hidden = !precedente;
-    $("etape-suivante").hidden = !suivante;
-    // À l'étape du jeu, on doit pouvoir passer sans avoir cherché.
-    if (suivante) $("etape-suivante").textContent = etape === "jeu" ? "Passer le jeu →" : `Suivant : ${nomEtape(suivante)} →`;
+    $("etape-precedente").hidden = rang === 0;
 
-    // Chaque étape est une page : on repart du haut de l'écran.
+    // Chaque étape est un écran : on repart du haut.
     window.scrollTo({ top: 0, behavior: "auto" });
     if (options.focus) {
-      const titre = document.querySelector(`.etape[data-etape="${etape}"] .titre-section`);
+      // Le premier titre de l'écran reçoit le focus (lecteurs d'écran, clavier).
+      const titre = document.querySelector(`.etape[data-etape="${etape}"] :is(h1, h2)`);
       titre.setAttribute("tabindex", "-1");
       titre.focus({ preventScroll: true });
     }
   }
 
   function etapeVoisine(decalage) {
-    const courante = document.querySelector(".etape:not([hidden])").dataset.etape;
-    const cible = ETAPES[ETAPES.indexOf(courante) + decalage];
+    const cible = ETAPES[ETAPES.indexOf(etapeCourante()) + decalage];
     if (cible) allerA(cible);
   }
 
   $("etape-precedente").addEventListener("click", () => etapeVoisine(-1));
-  $("etape-suivante").addEventListener("click", () => etapeVoisine(1));
+  $("passer-jeu").addEventListener("click", () => etapeVoisine(1));
+
+  // Toucher l'écran : passe au suivant, sauf sur un élément cliquable.
+  $("contenu-invite").addEventListener("click", (evenement) => {
+    if (!AU_TOUCHER.has(etapeCourante()) || evenement.target.closest(INTERACTIF)) return;
+    etapeVoisine(1);
+  });
+
+  // Au clavier : → ou Entrée pour avancer sur les écrans au toucher, ← pour reculer.
+  document.addEventListener("keydown", (evenement) => {
+    if ($("contenu-invite").hidden || $("site").inert || !$("victoire").hidden) return;
+    if (evenement.target.closest("input, select, textarea, button, a")) return;
+    if (evenement.key === "ArrowLeft") etapeVoisine(-1);
+    else if (AU_TOUCHER.has(etapeCourante()) && ["ArrowRight", "Enter", " "].includes(evenement.key)) {
+      evenement.preventDefault();
+      etapeVoisine(1);
+    }
+  });
 
   function afficherFoyer(foyer) {
     foyerCourant = foyer;
@@ -441,7 +455,7 @@
   function cachette(photo) {
     return el("button", {
       type: "button",
-      class: "cachette cachette--info",
+      class: "cachette cachette--lot",
       "data-photo": photo,
       tabindex: "-1",
       "aria-hidden": "true",
@@ -461,14 +475,16 @@
         return el(
           "article",
           { class: "lot" },
-          el("img", { src: lot.image, alt: lot.nom, loading: "lazy" }),
+          el("img", { src: lot.image, alt: lot.nom }),
           el("p", { class: "lot__numero" }, `Lot n° ${index + 1}`),
           el("p", { class: "lot__nom" }, lot.nom),
           el(
             "p",
             { class: trouvee ? "lot__statut lot__statut--trouvee" : "lot__statut" },
-            trouvee ? "Photo trouvée : vous participez au tirage !" : `Trouvez la photo n° ${lot.photo}`,
+            trouvee ? "✓ Vous participez" : `Photo n° ${lot.photo} à trouver`,
           ),
+          // La photo 2 se cache dans le coin de la carte du lot n° 2.
+          lot.photo === "2" ? cachette("2") : null,
         );
       }),
     );

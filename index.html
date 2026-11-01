@@ -143,58 +143,61 @@
       <p class="ouverture__aide" id="ouverture-aide" role="status">Touchez le sceau pour ouvrir</p>
     </div>
 
-    <!-- Étapes 2 à 4 : une page plein écran par étape. -->
+    <!-- Le site : quatre écrans plein écran. Sur les deux premiers, toucher
+         l'écran fait passer au suivant ; le jeu se quitte par son bouton. -->
     <div id="site" class="site" inert>
       <div id="contenu-invite" class="pages" hidden>
-        <header class="barre">
-          <p class="barre__noms"><span id="nom-mariee">Claire la plus belle</span> &amp; <span id="nom-marie">Alex</span></p>
-          <p class="barre__invite" id="accueil"></p>
-          <p class="bandeau-demo" id="bandeau-demo" hidden>Mode démo : les réponses ne sont envoyées nulle part.</p>
-        </header>
+        <p class="bandeau-demo" id="bandeau-demo" hidden>Démo : rien n'est enregistré</p>
+        <button type="button" class="retour" id="etape-precedente" aria-label="Écran précédent" hidden>←</button>
 
-        <main class="page">
-          <!-- Étape 2 : le mariage. Le grand en-tête ouvre cette page. -->
-          <section class="etape" data-etape="mariage" aria-labelledby="titre-mariage">
-            <h2 class="titre-section visually-hidden" id="titre-mariage">Le mariage</h2>
-            <div class="hero">
-              <svg class="branche branche--haut" aria-hidden="true"><use href="#branche" /></svg>
-              <p class="hero__surtitre">Nous nous marions</p>
-              <h1 class="hero__noms">
-                <span>Claire la plus belle</span>
-                <span class="hero__et" aria-hidden="true">&amp;</span>
-                <span class="visually-hidden">et</span>
-                <span>Alex</span>
-              </h1>
-              <p class="hero__dates" id="hero-dates"></p>
-              <p class="hero__lieu" id="hero-lieu">Hossegor</p>
-              <svg class="branche branche--bas" aria-hidden="true"><use href="#branche" /></svg>
-              <div class="grange-cadre">
-                <svg class="grange grange--fond" aria-hidden="true"><use href="#grange" /></svg>
-                <button type="button" class="cachette cachette--fenetre" data-photo="1" tabindex="-1" aria-hidden="true"></button>
-              </div>
-            </div>
-            <h3 class="sous-section">Le programme</h3>
-            <div class="evenements" id="liste-evenements"></div>
-            <h3 class="sous-section">Infos pratiques</h3>
-            <div class="infos" id="liste-infos"></div>
-          </section>
+        <!-- Écran 1 : le mariage. -->
+        <section class="etape ecran ecran--auto" data-etape="mariage" aria-labelledby="titre-mariage">
+          <p class="ecran__bonjour" id="accueil"></p>
+          <svg class="branche branche--haut" aria-hidden="true"><use href="#branche" /></svg>
+          <p class="hero__surtitre">Nous nous marions</p>
+          <h1 class="hero__noms" id="titre-mariage">
+            <span id="nom-mariee">Claire la plus belle</span>
+            <span class="hero__et" aria-hidden="true">&amp;</span>
+            <span class="visually-hidden">et</span>
+            <span id="nom-marie">Alex</span>
+          </h1>
+          <p class="hero__dates" id="hero-dates"></p>
+          <p class="hero__lieu" id="hero-lieu">Hossegor</p>
+          <svg class="grange grange--ecran" aria-hidden="true"><use href="#grange" /></svg>
+          <p class="ecran__suite" aria-hidden="true">Touchez l'écran pour continuer</p>
+        </section>
 
-          <!-- Étape 3 : le jeu. -->
-          <section class="etape" data-etape="jeu" aria-labelledby="titre-jeu" hidden>
-            <h2 class="titre-section" id="titre-jeu">Le jeu</h2>
-            <p class="sous-titre">
-              Trois photos de Claire sont cachées sur ce site, invisibles. Cliquez partout pour les trouver ! Chaque
-              photo trouvée vous inscrit au tirage au sort de son lot.
-            </p>
-            <p class="sous-titre sous-titre--note">
-              Pas envie de chercher ? Passez le jeu : les photos restent cachées sur toutes les étapes, vous pourrez
-              tomber dessus plus tard.
-            </p>
-            <div class="lots" id="liste-lots"></div>
-          </section>
+        <!-- Écran 2 : le programme et les infos pratiques. -->
+        <section class="etape ecran ecran--auto" data-etape="infos" aria-labelledby="titre-infos" hidden>
+          <h2 class="titre-section" id="titre-infos">Le programme</h2>
+          <div class="evenements" id="liste-evenements"></div>
+          <h2 class="titre-section titre-section--petit">Infos pratiques</h2>
+          <div class="infos" id="liste-infos"></div>
+          <p class="ecran__suite" aria-hidden="true">Touchez l'écran pour continuer</p>
+        </section>
 
-          <!-- Étape 4 : les infos des invités, au nom du foyer qui a donné son code. -->
-          <section class="etape carte" data-etape="invites" aria-labelledby="titre-reponse" hidden>
+        <!-- Écran 3 : le jeu. Les trois photos cachées sont toutes ici. -->
+        <section class="etape ecran" data-etape="jeu" aria-labelledby="titre-jeu" hidden>
+          <div class="branche-cadre">
+            <svg class="branche branche--jeu" aria-hidden="true"><use href="#branche" /></svg>
+            <button type="button" class="cachette cachette--baie" data-photo="3" tabindex="-1" aria-hidden="true"></button>
+          </div>
+          <h2 class="titre-section" id="titre-jeu">Le jeu</h2>
+          <p class="ecran__texte">
+            Trois photos de Claire sont cachées sur cet écran, invisibles. Cliquez partout ! Chaque photo trouvée vous
+            inscrit au tirage au sort de son lot.
+          </p>
+          <div class="lots" id="liste-lots"></div>
+          <div class="grange-cadre">
+            <svg class="grange grange--jeu" aria-hidden="true"><use href="#grange" /></svg>
+            <button type="button" class="cachette cachette--fenetre" data-photo="1" tabindex="-1" aria-hidden="true"></button>
+          </div>
+          <button type="button" class="bouton" id="passer-jeu">Passer le jeu →</button>
+        </section>
+
+        <!-- Écran 4 : les infos des invités, au nom du foyer qui a donné son code. -->
+        <section class="etape ecran ecran--formulaire" data-etape="invites" aria-labelledby="titre-reponse" hidden>
+          <div class="carte">
             <h2 class="titre-section titre-section--carte" id="titre-reponse">Vos infos</h2>
             <p class="sous-titre">Dites-nous qui sera là. Vous pourrez revenir modifier votre réponse avec le même lien.</p>
             <form id="form-reponse" novalidate>
@@ -211,20 +214,8 @@
               <p id="merci-texte">Votre réponse est bien enregistrée.</p>
               <button type="button" class="bouton bouton--discret" id="bouton-modifier">Modifier ma réponse</button>
             </div>
-          </section>
-        </main>
-
-        <footer class="pied">
-          <div class="navigation-etapes">
-            <button type="button" class="bouton bouton--discret" id="etape-precedente">← Précédent</button>
-            <button type="button" class="bouton" id="etape-suivante">Suivant →</button>
           </div>
-          <div class="branche-cadre">
-            <svg class="branche branche--pied" aria-hidden="true"><use href="#branche" /></svg>
-            <button type="button" class="cachette cachette--baie" data-photo="3" tabindex="-1" aria-hidden="true"></button>
-          </div>
-          <p class="pied__texte">Avec tout notre amour, Claire &amp; Alex</p>
-        </footer>
+        </section>
       </div>
     </div>
 

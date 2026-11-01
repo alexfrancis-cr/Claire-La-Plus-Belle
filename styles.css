@@ -74,46 +74,6 @@ body {
   display: none;
 }
 
-.barre,
-.page,
-.pied {
-  width: min(100% - 2rem, var(--largeur));
-  margin: 0 auto;
-}
-
-.barre {
-  padding-top: 1.25rem;
-  text-align: center;
-}
-
-.barre__noms {
-  margin: 0;
-  font-family: var(--police-script);
-  font-size: 1.6rem;
-  line-height: 1.2;
-}
-
-.barre__invite {
-  margin: 0.15rem 0 0;
-  font-family: var(--police-titre);
-  font-style: italic;
-  font-size: 1.125rem;
-  color: var(--encre-douce);
-}
-
-.page {
-  flex: 1;
-  padding-bottom: 1rem;
-}
-
-.sous-section {
-  margin: 2.5rem 0 1rem;
-  font-family: var(--police-titre);
-  font-weight: 500;
-  font-size: 1.625rem;
-  text-align: center;
-}
-
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -122,12 +82,6 @@ body {
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
-}
-
-/* ---------- En-tête ---------- */
-.hero {
-  text-align: center;
-  padding: 1.5rem 0 2rem;
 }
 
 .branche {
@@ -518,38 +472,11 @@ button:focus-visible,
   color: var(--terracotta);
 }
 
-/* ---------- Pied ---------- */
-.pied {
-  text-align: center;
-  padding: 0 0 1.5rem;
-}
-
-.pied__texte {
-  margin: 0.25rem 0 0;
-  font-family: var(--police-titre);
-  font-style: italic;
-  font-size: 1.125rem;
-  color: var(--encre-douce);
-}
-
-.branche--pied {
-  width: 9rem;
-  height: 2.25rem;
-  opacity: 0.8;
-}
-
 @media (prefers-reduced-motion: reduce) {
   * {
     transition: none !important;
   }
 }
-
-/* ---------- Lieu et silhouette de la grange ---------- */
-.hero {
-  position: relative;
-  overflow: hidden;
-}
-
 
 .grange {
   display: block;
@@ -561,14 +488,6 @@ button:focus-visible,
   position: relative;
   width: min(30rem, 100%);
   margin: -0.5rem auto -2.5rem;
-}
-
-.grange--fond {
-  width: 100%;
-  height: auto;
-  aspect-ratio: 2 / 1;
-  opacity: 0.22;
-  pointer-events: none;
 }
 
 .hero__lieu {
@@ -930,10 +849,6 @@ body.enveloppe-fermee {
   margin: 0 auto;
 }
 
-.branche-cadre .branche--pied {
-  width: 100%;
-}
-
 /* Une baie de la branche : centre (206, 24) dans un dessin de 240 × 60. */
 .cachette--baie {
   left: 85.8%;
@@ -945,15 +860,6 @@ body.enveloppe-fermee {
 /* Le coin haut droit d'une carte d'infos pratiques. */
 .info {
   position: relative;
-}
-
-.cachette--info {
-  left: auto;
-  right: 0;
-  top: 0;
-  width: 3rem;
-  aspect-ratio: 1;
-  transform: none;
 }
 
 /* Les lots */
@@ -1010,39 +916,6 @@ body.enveloppe-fermee {
 .lot__statut--trouvee {
   color: var(--terracotta-fonce);
   font-weight: 400;
-}
-
-/* Sur téléphone : une liste, image à gauche, texte à droite. */
-@media (max-width: 34rem) {
-  .lots {
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
-  }
-
-  .lot {
-    display: grid;
-    grid-template-columns: 4.5rem 1fr;
-    grid-template-rows: auto auto auto;
-    column-gap: 1rem;
-    align-items: center;
-    padding: 0.9rem 1rem;
-    text-align: left;
-  }
-
-  .lot img {
-    grid-row: 1 / 4;
-    height: 6.5rem;
-    justify-self: center;
-  }
-
-  .lot__numero {
-    margin: 0;
-    align-self: end;
-  }
-
-  .lot__statut {
-    align-self: start;
-  }
 }
 
 /* ---------- Victoire ---------- */
@@ -1185,26 +1058,8 @@ body.enveloppe-fermee {
   animation: entree-etape 0.35s ease both;
 }
 
-.etape > .titre-section:focus {
+.etape :is(h1, h2):focus {
   outline: none;
-}
-
-.navigation-etapes {
-  position: relative;
-  z-index: 2; /* toujours au-dessus des zones invisibles du jeu */
-  display: flex;
-  justify-content: space-between;
-  gap: 0.75rem;
-  margin: 1.5rem 0 1.75rem;
-}
-
-.navigation-etapes .bouton[hidden] {
-  display: none;
-}
-
-/* Sans « Précédent », « Suivant » reste à droite. */
-#etape-suivante {
-  margin-left: auto;
 }
 
 @keyframes entree-etape {
@@ -1388,5 +1243,271 @@ path.acces__serrure {
   .acces--refus .acces__carte {
     transition: none !important;
     animation: none !important;
+  }
+}
+
+/* ---------- Les écrans plein écran ---------- */
+/*
+ * Chaque étape tient dans la hauteur de l'écran, sans défiler (sauf le
+ * formulaire, qui peut être long). Les tailles suivent la hauteur
+ * disponible (unités vh/svh) pour tenir aussi sur un petit téléphone.
+ */
+.ecran {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.35rem, 1.6vh, 1rem);
+  width: min(100%, 46rem);
+  min-height: 100vh;
+  min-height: 100svh;
+  margin: 0 auto;
+  padding: 3rem 1.25rem 1.25rem;
+  text-align: center;
+}
+
+.ecran[hidden] {
+  display: none;
+}
+
+.ecran--auto {
+  cursor: var(--curseur-clic);
+  user-select: none;
+}
+
+.ecran .titre-section {
+  margin: 0;
+  font-size: clamp(1.5rem, 4vh, 2rem);
+}
+
+.ecran .titre-section::after {
+  margin-top: 0.4rem;
+}
+
+.titre-section--petit {
+  margin-top: clamp(0.5rem, 2vh, 1.25rem) !important;
+  font-size: clamp(1.25rem, 3.2vh, 1.625rem) !important;
+}
+
+.ecran__bonjour {
+  margin: 0;
+  font-family: var(--police-titre);
+  font-style: italic;
+  font-size: clamp(1.1rem, 2.8vh, 1.4rem);
+  color: var(--encre-douce);
+}
+
+.ecran__texte {
+  margin: 0;
+  max-width: 32rem;
+  font-size: clamp(0.875rem, 2vh, 1rem);
+  color: var(--encre-douce);
+}
+
+/* « Touchez l'écran pour continuer », qui respire doucement. */
+.ecran__suite {
+  margin: clamp(0.25rem, 2vh, 1rem) 0 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--sauge-fonce);
+  animation: respire 2.4s ease-in-out infinite;
+}
+
+@keyframes respire {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+/* Écran 1 : le mariage. */
+.ecran .hero__noms {
+  font-size: clamp(2.2rem, min(11vw, 7.5vh), 4.5rem);
+}
+
+.ecran .hero__dates {
+  margin: 0;
+  font-size: clamp(1.05rem, 2.8vh, 1.375rem);
+  line-height: 1.5;
+}
+
+.ecran .hero__lieu {
+  margin: 0;
+}
+
+.ecran .branche {
+  width: min(13rem, 60vw);
+  height: clamp(2.25rem, 6vh, 3.5rem);
+}
+
+.grange--ecran {
+  width: min(22rem, 80vw, 34vh);
+  height: auto;
+  aspect-ratio: 2 / 1;
+  opacity: 0.25;
+}
+
+/* Écran 2 : le programme et les infos, en version compacte. */
+.ecran .evenements {
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.ecran .evenement {
+  padding: clamp(0.75rem, 2.2vh, 1.5rem) 0.75rem;
+}
+
+.ecran .evenement__date {
+  font-size: clamp(1.1rem, 2.8vh, 1.5rem);
+}
+
+.ecran .evenement__lieu {
+  font-size: 1rem;
+}
+
+.ecran .infos {
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.ecran .info {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: clamp(0.55rem, 1.6vh, 0.9rem) 1rem;
+  text-align: left;
+}
+
+.ecran .info h4 {
+  margin: 0;
+  font-size: 1.125rem;
+}
+
+.ecran .info p {
+  text-align: right;
+  font-size: 0.9375rem;
+}
+
+/* Écran 3 : le jeu. */
+.ecran .branche-cadre {
+  width: min(11rem, 55vw);
+}
+
+.branche--jeu {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 1;
+}
+
+.ecran .lots {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+  width: 100%;
+}
+
+.ecran .lot {
+  position: relative;
+  padding: 0.75rem 0.4rem;
+  gap: 0.2rem;
+}
+
+.ecran .lot img {
+  height: clamp(3.75rem, 12vh, 8rem);
+}
+
+.ecran .lot__numero {
+  margin-top: 0.3rem;
+  font-size: 0.6875rem;
+  letter-spacing: 0.15em;
+}
+
+.ecran .lot__nom {
+  font-size: clamp(0.8125rem, 1.9vh, 1rem);
+}
+
+.ecran .lot__statut {
+  font-size: 0.75rem;
+}
+
+.ecran .grange-cadre {
+  width: min(16rem, 70vw, 24vh);
+  margin: 0;
+}
+
+.grange--jeu {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 2 / 1;
+  opacity: 0.25;
+}
+
+/* La zone de la photo 2, dans le coin haut droit de la carte du lot n° 2. */
+.cachette--lot {
+  left: auto;
+  right: 0;
+  top: 0;
+  width: 3rem;
+  aspect-ratio: 1;
+  transform: none;
+}
+
+/* Écran 4 : le formulaire peut défiler ; il commence en haut. */
+.ecran--formulaire {
+  justify-content: flex-start;
+}
+
+.ecran--formulaire .carte {
+  width: 100%;
+  margin: 0;
+  text-align: left;
+}
+
+/* Le retour, et le bandeau de démo, fixés dans les coins. */
+.retour {
+  position: fixed;
+  z-index: 5;
+  top: 0.75rem;
+  left: 0.75rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid var(--trait);
+  border-radius: 50%;
+  background: var(--papier);
+  color: var(--encre-douce);
+  font-size: 1.1rem;
+}
+
+.retour[hidden] {
+  display: none;
+}
+
+.retour:hover {
+  border-color: var(--sauge);
+  color: var(--sauge-fonce);
+}
+
+.retour:focus-visible {
+  outline: 2px solid var(--sauge);
+  outline-offset: 2px;
+}
+
+.pages > .bandeau-demo {
+  position: fixed;
+  z-index: 5;
+  top: 0.85rem;
+  right: 0.75rem;
+  margin: 0;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.6875rem;
+  background: var(--papier);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ecran__suite {
+    animation: none;
   }
 }

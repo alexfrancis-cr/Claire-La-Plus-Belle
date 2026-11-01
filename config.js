@@ -44,7 +44,6 @@ window.MARIAGE = {
       titre: "Tenue",
       evenements: ["arrivee", "mariage"],
       texte: "À venir.",
-      photoCachee: "2", // le jeu : une zone invisible dans ce bloc cache la photo 2
     },
     {
       titre: "Liste de mariage",
