@@ -598,8 +598,15 @@ body.enveloppe-fermee {
   background: var(--creme);
 }
 
+/* Sans cette règle, display: flex l'emporte sur l'attribut hidden et l'écran
+   de la lettre, invisible, continue de bloquer tous les clics du site. */
+.ouverture[hidden] {
+  display: none;
+}
+
 /* Dernier temps de l'ouverture : fondu avec un léger zoom vers le site. */
 .ouverture.fin {
+  pointer-events: none;
   opacity: 0;
   transform: scale(1.05);
   transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -918,6 +925,7 @@ body.enveloppe-fermee {
 
 .branche-cadre {
   position: relative;
+  z-index: 1;
   width: 9rem;
   margin: 0 auto;
 }
@@ -1182,10 +1190,12 @@ body.enveloppe-fermee {
 }
 
 .navigation-etapes {
+  position: relative;
+  z-index: 2; /* toujours au-dessus des zones invisibles du jeu */
   display: flex;
   justify-content: space-between;
   gap: 0.75rem;
-  margin: 1.5rem 0 1rem;
+  margin: 1.5rem 0 1.75rem;
 }
 
 .navigation-etapes .bouton[hidden] {
