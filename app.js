@@ -87,7 +87,7 @@
   }
 
   function nomAffiche(personne, rang) {
-    if (personne.prenom) return personne.prenom;
+    if (personne.prenom) return [personne.prenom, personne.nom].filter(Boolean).join(" ");
     if (personne.type === "enfant") return rang.enfants > 1 ? `Votre enfant n° ${rang.enfant}` : "Votre enfant";
     return "Votre accompagnant·e";
   }
@@ -199,26 +199,26 @@
         if (personne.type === "enfant" && !personne.prenom) rangEnfant += 1;
         const titre = nomAffiche(personne, { enfants, enfant: rangEnfant });
         const evenements = config.evenements.filter((evenement) => personne.evenements.includes(evenement.id));
-        const idPrenom = `prenom-${personne.id}`;
+        // Ce qu'on sait déjà est pré-rempli : l'invité confirme ou corrige.
+        const champIdentite = (cle, libelle) =>
+          el(
+            "div",
+            { class: "champ" },
+            el("label", { for: `${cle}-${personne.id}` }, libelle),
+            el("input", {
+              id: `${cle}-${personne.id}`,
+              name: `${cle}-${personne.id}`,
+              type: "text",
+              maxlength: "60",
+              autocomplete: "off",
+              value: personne[cle] || "",
+            }),
+          );
         return el(
           "fieldset",
           { class: "personne", "data-personne": personne.id },
           el("legend", {}, titre),
-          personne.prenom
-            ? null
-            : el(
-                "div",
-                { class: "champ" },
-                el("label", { for: idPrenom }, "Prénom ", el("span", { class: "facultatif" }, "(facultatif)")),
-                el("input", {
-                  id: idPrenom,
-                  name: idPrenom,
-                  type: "text",
-                  maxlength: "60",
-                  autocomplete: "off",
-                  value: personne.reponse?.prenom || "",
-                }),
-              ),
+          el("div", { class: "identite" }, champIdentite("prenom", "Prénom"), champIdentite("nom", "Nom")),
           ...evenements.map((evenement) => questionPresence(personne, evenement)),
           questionRegime(personne),
         );
@@ -393,10 +393,10 @@
       }
       const regime = formulaire.querySelector(`#regime-${personne.id}`).value;
       const detail = formulaire.querySelector(`#regime-detail-${personne.id}`);
-      const prenom = formulaire.querySelector(`#prenom-${personne.id}`);
       return {
         id: personne.id,
-        prenom: prenom ? prenom.value.trim() : "",
+        prenom: formulaire.querySelector(`#prenom-${personne.id}`).value.trim(),
+        nom: formulaire.querySelector(`#nom-${personne.id}`).value.trim(),
         presences,
         regime,
         regimeDetail: regime.includes(PRECISER) ? detail.value.trim() : "",
@@ -422,10 +422,10 @@
     try {
       const resultat = await envoyerReponse({ code: codeCourant, personnes, message: $("message").value.trim() });
       if (!resultat.ok) throw new Error(resultat.erreur || "refus");
-      foyerCourant.personnes = foyerCourant.personnes.map((personne) => ({
-        ...personne,
-        reponse: personnes.find((reponse) => reponse.id === personne.id),
-      }));
+      foyerCourant.personnes = foyerCourant.personnes.map((personne) => {
+        const reponse = personnes.find((r) => r.id === personne.id);
+        return { ...personne, prenom: reponse.prenom || personne.prenom, nom: reponse.nom || personne.nom, reponse };
+      });
       foyerCourant.message = $("message").value.trim();
       const viennent = personnes.some((personne) => Object.values(personne.presences).includes("oui"));
       $("merci-texte").textContent =

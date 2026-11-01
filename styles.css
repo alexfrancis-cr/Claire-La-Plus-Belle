@@ -1511,3 +1511,14 @@ path.acces__serrure {
     animation: none;
   }
 }
+
+/* Prénom et nom côte à côte, pré-remplis : l'invité confirme ou corrige. */
+.identite {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.identite .champ {
+  margin-bottom: 1rem;
+}

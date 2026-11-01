@@ -8,15 +8,15 @@
 window.DEMO_FOYERS = {
   DEMOMARI: {
     personnes: [
-      { id: "D001", prenom: "Octave", type: "adulte", evenements: ["arrivee", "mariage"] },
-      { id: "D002", prenom: "Sidonie", type: "adulte", evenements: ["arrivee", "mariage"] },
+      { id: "D001", prenom: "Octave", nom: "Bellerose", type: "adulte", evenements: ["arrivee", "mariage"] },
+      { id: "D002", prenom: "Sidonie", nom: "Bellerose", type: "adulte", evenements: ["arrivee", "mariage"] },
     ],
   },
   DEMODEUX: {
     personnes: [
-      { id: "D003", prenom: "Anatole", type: "adulte", evenements: ["arrivee", "mariage"] },
-      { id: "D004", prenom: "", type: "accompagnant", evenements: ["arrivee", "mariage"] },
-      { id: "D005", prenom: "", type: "enfant", evenements: ["arrivee", "mariage"] },
+      { id: "D003", prenom: "Anatole", nom: "Fougère", type: "adulte", evenements: ["arrivee", "mariage"] },
+      { id: "D004", prenom: "", nom: "", type: "accompagnant", evenements: ["arrivee", "mariage"] },
+      { id: "D005", prenom: "", nom: "Fougère", type: "enfant", evenements: ["arrivee", "mariage"] },
     ],
   },
 };
