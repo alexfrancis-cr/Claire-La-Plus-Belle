@@ -5,7 +5,9 @@ window.MARIAGE = {
   marie: "Alex",
   lieu: "Angresse",
   // Affiché sous vos noms, sur le premier écran.
-  periode: ["Du vendredi 23", "au dimanche 25 juillet 2027"],
+  // Sous vos noms, sur le premier écran.
+  invitation: "ont la joie de vous inviter à leur mariage",
+  periode: ["Du vendredi 23 au dimanche 25 juillet 2027 · Angresse"],
   // Pour le compte à rebours.
   dateMariage: "2027-07-24",
   annee: "2027",
@@ -15,8 +17,8 @@ window.MARIAGE = {
   // de demo.js et n'envoie aucune réponse.
   apiUrl: "",
 
-  // Deux listes : un foyer ne voit que les moments auxquels au moins une de
-  // ses personnes est invitée (colonnes invite_arrivee / invite_mariage).
+  // Un foyer ne voit que les moments auxquels au moins une de ses personnes
+  // est invitée (colonnes invite_arrivee / invite_mariage / invite_brunch).
   // Pour l'instant, seulement les dates : « horaires » et « carte » restent
   // vides et ne s'affichent pas.
   evenements: [
@@ -37,6 +39,17 @@ window.MARIAGE = {
       jour: "24",
       jourSemaine: "Samedi",
       mois: "juillet",
+      lieu: "Église de Hossegor",
+      horaires: "",
+      carte: "",
+    },
+    {
+      id: "brunch",
+      nom: "Brunch",
+      dateTexte: "Dimanche 25 juillet",
+      jour: "25",
+      jourSemaine: "Dimanche",
+      mois: "juillet",
       horaires: "",
       carte: "",
     },
@@ -47,17 +60,17 @@ window.MARIAGE = {
   infos: [
     {
       titre: "Hébergement",
-      evenements: ["arrivee", "mariage"],
+      evenements: ["arrivee", "mariage", "brunch"],
       texte: "Nos adresses à Angresse et aux alentours arrivent bientôt.",
     },
     {
       titre: "Tenue",
-      evenements: ["arrivee", "mariage"],
+      evenements: ["arrivee", "mariage", "brunch"],
       texte: "À venir.",
     },
     {
       titre: "Liste de mariage",
-      evenements: ["arrivee", "mariage"],
+      evenements: ["arrivee", "mariage", "brunch"],
       texte: "À venir.",
     },
   ],

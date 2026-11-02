@@ -131,6 +131,7 @@
               { class: "frise__texte" },
               el("p", { class: "frise__semaine" }, `${evenement.dateTexte} ${config.annee}`),
               el("h3", { class: "frise__nom" }, evenement.nom),
+              evenement.lieu ? el("p", { class: "frise__lieu" }, evenement.lieu) : null,
               evenement.horaires ? el("p", { class: "frise__horaires" }, evenement.horaires) : null,
               evenement.carte
                 ? el("a", { class: "lien", href: evenement.carte, target: "_blank", rel: "noopener" }, "Voir sur la carte")
@@ -174,7 +175,7 @@
         "legend",
         {},
         evenement.nom,
-        el("small", {}, `${evenement.dateTexte} ${config.annee}`),
+        el("small", {}, [`${evenement.dateTexte} ${config.annee}`, evenement.lieu].filter(Boolean).join(" · ")),
       ),
       el("div", { class: "choix-groupe" }, option("oui", "Présent·e"), option("non", "Absent·e")),
     );
@@ -705,7 +706,7 @@
 
   $("nom-mariee").textContent = config.mariee;
   $("nom-marie").textContent = config.marie;
-  $("hero-lieu").textContent = config.lieu;
+  $("arche-invitation").textContent = config.invitation;
   montrer("bandeau-demo", modeDemo);
 
   // ---------- La lettre ----------

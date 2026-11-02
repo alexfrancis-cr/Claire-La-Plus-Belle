@@ -1685,7 +1685,7 @@ body.enveloppe-fermee {
   position: relative;
   width: calc(100% + 2.5rem);
   margin: 0 -1.25rem clamp(0.25rem, 1vh, 0.75rem);
-  height: clamp(8.5rem, 22vh, 13rem);
+  height: clamp(7rem, 16vh, 10rem);
   background: var(--mosaique) 0 0 / 130px;
   /* le bas du bandeau se termine en pointe, comme un vitrail gothique */
   clip-path: polygon(0 0, 100% 0, 100% 80%, 58% 80%, 50% 100%, 42% 80%, 0 80%);
@@ -1702,7 +1702,7 @@ body.enveloppe-fermee {
   position: absolute;
   z-index: 1;
   top: -6%;
-  width: clamp(6.5rem, 18vh, 10rem);
+  width: clamp(5.5rem, 14vh, 8rem);
   aspect-ratio: 1;
 }
 
@@ -1751,7 +1751,7 @@ body.enveloppe-fermee {
 }
 
 .compte__sablier {
-  width: clamp(2rem, 6vh, 3rem);
+  width: clamp(1.75rem, 4.5vh, 2.5rem);
   aspect-ratio: 60 / 100;
 }
 
@@ -1949,23 +1949,56 @@ body.enveloppe-fermee {
   overflow: hidden;
 }
 
-/* Programme : médaillons un peu plus petits, pour tenir sur un écran. */
+/* Programme : trois moments à faire tenir sur un écran, médaillons compacts. */
 .frise__moment {
-  grid-template-columns: 4.4rem 1fr;
-  padding: clamp(0.25rem, 1vh, 0.6rem) 0;
+  grid-template-columns: 3.9rem 1fr;
+  gap: 0.9rem;
+  padding: clamp(0.2rem, 0.8vh, 0.45rem) 0;
 }
 
 .frise__date {
-  width: 4.4rem;
-  height: 4.4rem;
+  width: 3.9rem;
+  height: 3.9rem;
 }
 
 .frise::before {
-  left: 2.2rem;
+  left: 1.95rem;
 }
 
 .frise__jour {
-  font-size: 1.8rem;
+  font-size: 1.6rem;
+}
+
+.frise__mois {
+  font-size: 0.5625rem;
+}
+
+.frise__nom {
+  font-size: clamp(1.5rem, 3.6vh, 1.9rem);
+}
+
+.compte__titre {
+  font-size: clamp(1.5rem, 3.8vh, 2rem);
+}
+
+
+/* Sous les noms : « ont la joie de vous inviter à leur mariage ». */
+.arche__invitation {
+  margin: 0;
+  font-family: var(--police-titre);
+  font-style: italic;
+  font-size: clamp(1.15rem, 2.9vh, 1.45rem);
+  line-height: 1.3;
+  color: var(--encre-douce);
+}
+
+/* Le lieu d'un moment, dans la frise (l'église pour le mariage). */
+.frise__lieu {
+  margin: 0;
+  font-family: var(--police-titre);
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--encre-douce);
 }
 
 /* Petits téléphones (iPhone SE, 667 px de haut) : programme et jeu resserrés. */
