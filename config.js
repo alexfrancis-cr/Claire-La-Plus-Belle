@@ -13,15 +13,13 @@ window.MARIAGE = {
   dateMariage: "2027-07-24",
   annee: "2027",
 
-  // Adresse de l'application Google Apps Script (voir apps-script/README.md).
-  // Laisser vide pour le mode démo : le site utilise alors les foyers fictifs
-  // de demo.js et n'envoie aucune réponse.
-  apiUrl: "",
+  // Adresse de l'application Google Apps Script (voir README.md). Le mot de
+  // passe n'est jamais écrit ici (ce fichier est public) : c'est le script
+  // qui le vérifie (Propriétés du script → MOT_DE_PASSE).
+  apiUrl: "https://script.google.com/macros/s/AKfycbwmxgB18_k9C2eSbkKkuQQR0yO2Ia9swcrVIYHKpdjncu5EjtbZpk4Dh1qi_6A795gx/exec",
 
-  // Un foyer ne voit que les moments auxquels au moins une de ses personnes
-  // est invitée (colonnes invite_arrivee / invite_mariage / invite_brunch).
-  // Pour l'instant, seulement les dates : « horaires » et « carte » restent
-  // vides et ne s'affichent pas.
+  // Tout le monde est invité aux trois moments. Pour l'instant, seulement
+  // les dates : « horaires » et « carte » restent vides et ne s'affichent pas.
   evenements: [
     {
       id: "arrivee",
@@ -55,8 +53,7 @@ window.MARIAGE = {
     },
   ],
 
-  // Chaque bloc s'affiche seulement si le foyer est invité à l'un des
-  // moments listés.
+  // Les infos pratiques, sous le programme.
   infos: [
     {
       titre: "Hébergement",

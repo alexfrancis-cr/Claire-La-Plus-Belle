@@ -129,7 +129,7 @@
 
     </svg>
 
-    <!-- Étape 0 : accès restreint. Le code identifie le foyer : on sait qui répond. -->
+    <!-- Étape 0 : accès restreint, par un mot de passe commun à tous les invités. -->
     <div class="acces" id="acces">
       <form class="acces__carte" id="form-code" novalidate>
         <svg class="acces__cadenas" viewBox="0 0 48 56" aria-hidden="true">
@@ -141,9 +141,9 @@
         <p class="acces__surtitre" id="acces-statut">Accès restreint</p>
         <p class="acces__titre">Invitation personnelle</p>
         <p class="acces__texte">
-          Ce site est réservé aux invités de Claire la plus belle et Alex. Entrez le code reçu avec votre invitation.
+          Ce site est réservé aux invités de Claire la plus belle et Alex. Entrez le mot de passe reçu avec votre invitation.
         </p>
-        <label class="visually-hidden" for="champ-code">Code d'invitation</label>
+        <label class="visually-hidden" for="champ-code">Mot de passe</label>
         <input
           id="champ-code"
           name="code"
@@ -151,14 +151,14 @@
           autocomplete="off"
           autocapitalize="characters"
           spellcheck="false"
-          maxlength="12"
-          placeholder="CODE"
+          maxlength="40"
+          placeholder="MOT DE PASSE"
           required
         />
         <button type="submit" class="bouton bouton--large acces__bouton" id="bouton-acces">Entrer</button>
         <p class="message-erreur acces__erreur" id="erreur-code" role="alert"></p>
         <p class="acces__bienvenue" id="acces-bienvenue" role="status"></p>
-        <p class="acces__demo" id="acces-demo" hidden>Mode démo : essayez le code DEMODEUX ou DEMOMARI.</p>
+        <p class="acces__demo" id="acces-demo" hidden></p>
       </form>
     </div>
 
@@ -200,7 +200,7 @@
             <svg class="arche__bouquet arche__bouquet--bg" aria-hidden="true"><use href="#bouquet" /></svg>
             <svg class="arche__bouquet arche__bouquet--bd" aria-hidden="true"><use href="#bouquet" /></svg>
             <div class="arche__fenetre">
-              <p class="ecran__bonjour" id="accueil"></p>
+              <p class="ecran__bonjour" id="accueil">Bonjour !</p>
               <h1 class="hero__noms" id="titre-mariage">
                 <span id="nom-mariee">Claire la plus belle</span>
                 <span class="hero__et" aria-hidden="true">&amp;</span>
@@ -254,18 +254,17 @@
           <button type="button" class="bouton" id="passer-jeu">Passer le jeu →</button>
         </section>
 
-        <!-- Écran 4 : les infos des invités, au nom du foyer qui a donné son code. -->
+        <!-- Écran 4 : vos infos. Chacun écrit son nom et ajoute qui vient avec lui. -->
         <section class="etape ecran ecran--formulaire" data-etape="invites" aria-labelledby="titre-reponse" hidden>
           <div class="carte">
             <h2 class="titre-section titre-section--carte" id="titre-reponse">Vos infos</h2>
             <p class="sous-titre">
-              Dernière étape, promis&nbsp;! Pour chacun, dites-nous votre nom, si vous serez là, et vos petites
+              Dernière étape, promis&nbsp;! Dites-nous votre prénom et votre nom, si vous serez là, et vos petites
               contraintes côté assiette. Vous venez à plusieurs&nbsp;? Ajoutez tout le monde avec le «&nbsp;+&nbsp;».
-              Et pas de panique&nbsp;: vous pourrez changer d'avis plus tard, avec le même lien.
+              Et pas de panique&nbsp;: vous pourrez changer d'avis plus tard, depuis ce même téléphone.
             </p>
             <form id="form-reponse" novalidate>
               <div id="personnes"></div>
-              <div id="ajouts"></div>
               <button type="button" class="ajouter" id="bouton-ajouter">
                 <span class="ajouter__plus" aria-hidden="true">+</span> Ajouter une personne
               </button>
@@ -302,7 +301,6 @@
     <canvas class="feux" id="feux" aria-hidden="true"></canvas>
 
     <script src="config.js"></script>
-    <script src="demo.js"></script>
     <script src="app.js"></script>
   </body>
 </html>

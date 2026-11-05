@@ -1,5 +1,5 @@
-// Faire-part : charge le foyer correspondant au code, affiche seulement ce qui
-// le concerne, et envoie sa réponse. Toutes les données affichées passent par
+// Faire-part : un mot de passe commun ouvre le site ; chacun indique ensuite
+// qui vient, et envoie sa réponse. Toutes les données affichées passent par
 // textContent : rien de ce qui vient du tableur n'est interprété comme du HTML.
 (function () {
   "use strict";
@@ -11,9 +11,8 @@
 
   const $ = (id) => document.getElementById(id);
   const sansAnimation = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  let codeCourant = "";
-  let foyerCourant = null;
-  let numeroAjout = 0;
+  let motDePasseCourant = "";
+  let numeroPersonne = 0;
 
   // ---------- Utilitaires ----------
 
@@ -50,33 +49,25 @@
     $(id).hidden = !visible;
   }
 
-  function normaliserCode(valeur) {
+  // Majuscules, minuscules, accents et espaces ne comptent pas : « Soleil 2027 »
+  // et « soleil2027 » ouvrent pareil.
+  function normaliserMotDePasse(valeur) {
     return String(valeur || "")
+      .normalize("NFD")
+      .replace(/\p{M}/gu, "")
       .toUpperCase()
       .replace(/[^A-Z0-9]/g, "");
   }
 
-  function joindre(mots) {
-    if (mots.length <= 1) return mots.join("");
-    return mots.slice(0, -1).join(", ") + " et " + mots[mots.length - 1];
-  }
 
   // ---------- Échanges avec le script Google (ou la démo) ----------
 
-  async function chargerFoyer(code) {
-    if (modeDemo) {
-      const foyer = (window.DEMO_FOYERS || {})[code];
-      if (!foyer) return { ok: false, erreur: "code_inconnu" };
-      return {
-        ok: true,
-        foyer: {
-          personnes: foyer.personnes.map((personne) => ({ ...personne, reponse: null })),
-          message: "",
-        },
-      };
-    }
+  // Le mot de passe est vérifié par le script Google : il n'est écrit nulle
+  // part dans le site. En démo, il est dans config.js (motDePasseDemo).
+  async function verifierMotDePasse(motDePasse) {
+    if (modeDemo) return { ok: motDePasse === normaliserMotDePasse(config.motDePasseDemo), erreur: "mot_de_passe" };
     const url = new URL(config.apiUrl);
-    url.searchParams.set("code", code);
+    url.searchParams.set("mdp", motDePasse);
     const reponse = await fetch(url.toString(), { method: "GET" });
     if (!reponse.ok) throw new Error("HTTP " + reponse.status);
     return reponse.json();
@@ -85,7 +76,7 @@
   async function envoyerReponse(corps) {
     if (modeDemo) {
       await new Promise((resoudre) => setTimeout(resoudre, 400));
-      return { ok: true };
+      return { ok: true, groupe: corps.groupe || `DEMO-${Date.now()}` };
     }
     // text/plain évite la requête préalable CORS, que Google Apps Script ne gère pas.
     const reponse = await fetch(config.apiUrl, {
@@ -98,16 +89,6 @@
   }
 
   // ---------- Affichage ----------
-
-  function evenementsDuFoyer(foyer) {
-    const ids = new Set(foyer.personnes.flatMap((personne) => personne.evenements));
-    return config.evenements.filter((evenement) => ids.has(evenement.id));
-  }
-
-  function nomAffiche(personne) {
-    if (personne.prenom) return [personne.prenom, personne.nom].filter(Boolean).join(" ");
-    return "Invité·e";
-  }
 
   // Sous vos noms : la période du week-end (« Du vendredi 23 au dimanche 25 juillet 2027 »).
   // Le compte à rebours jusqu'au mariage, en jours.
@@ -238,96 +219,87 @@
     );
   }
 
-  // Un +1 ou un enfant sans prénom n'est pas affiché : l'invité ajoute
-  // lui-même les personnes qui viennent avec lui, avec le bouton +.
-  function personnesAffichees(foyer) {
-    return foyer.personnes.filter((personne) => personne.prenom || personne.type === "adulte" || personne.reponse);
-  }
-
-  function champTexte(id, libelle, valeur, options = {}) {
+  function champTexte(id, libelle, valeur) {
     return el(
       "div",
       { class: "champ" },
       el("label", { for: id }, libelle),
-      el("input", {
-        id,
-        name: id,
-        type: "text",
-        maxlength: "60",
-        autocomplete: "off",
-        required: options.requis || false,
-        value: valeur || "",
-      }),
+      el("input", { id, name: id, type: "text", maxlength: "60", autocomplete: "off", required: true, value: valeur || "" }),
     );
   }
 
-  function afficherFormulaire(foyer) {
-    $("personnes").replaceChildren(
-      ...personnesAffichees(foyer).map((personne) => {
-        const evenements = config.evenements.filter((evenement) => personne.evenements.includes(evenement.id));
-        // Ce qu'on sait déjà est pré-rempli : l'invité confirme ou corrige.
-        return el(
-          "fieldset",
-          { class: "personne", "data-personne": personne.id },
-          el("legend", {}, nomAffiche(personne)),
-          el(
-            "div",
-            { class: "identite" },
-            champTexte(`prenom-${personne.id}`, "Prénom", personne.prenom),
-            champTexte(`nom-${personne.id}`, "Nom", personne.nom),
-          ),
-          ...evenements.map((evenement) => questionPresence(personne, evenement)),
-          questionRegime(personne),
-        );
-      }),
-    );
-    $("ajouts").replaceChildren();
-    $("message").value = foyer.message || "";
-  }
-
-  // Une personne en plus : prénom, nom, adulte ou enfant, puis les mêmes
-  // questions que les autres. Autant qu'on veut ; « Retirer » l'enlève.
-  function ajouterPersonne() {
-    numeroAjout += 1;
-    const personne = { id: `ajout${numeroAjout}`, reponse: null };
-    const evenements = evenementsDuFoyer(foyerCourant);
-    const nomType = `type-${personne.id}`;
+  // Une personne : prénom, nom, adulte ou enfant, présence à chaque moment,
+  // régime. La première est la personne qui répond ; les suivantes viennent
+  // avec le bouton +, autant qu'on veut, et « Retirer » les enlève.
+  function blocPersonne(personne, premiere) {
+    numeroPersonne += 1;
+    const id = `p${numeroPersonne}`;
+    const avecId = { ...personne, id, reponse: personne };
+    const nomType = `type-${id}`;
+    const typeActuel = personne.type || (premiere ? "adulte" : "");
     const optionType = (valeur, texte) =>
       el(
         "label",
         { class: "choix" },
-        el("input", { type: "radio", name: nomType, value: valeur, required: true }),
+        el("input", { type: "radio", name: nomType, value: valeur, required: true, checked: typeActuel === valeur }),
         el("span", {}, texte),
       );
     const bloc = el(
       "fieldset",
-      { class: "personne personne--ajout", "data-ajout": personne.id },
-      el("legend", {}, "Une personne en plus"),
-      el(
-        "div",
-        { class: "identite" },
-        champTexte(`prenom-${personne.id}`, "Prénom", "", { requis: true }),
-        champTexte(`nom-${personne.id}`, "Nom", ""),
-      ),
+      { class: premiere ? "personne" : "personne personne--ajout", "data-personne": id },
+      el("legend", {}, premiere ? "Vous" : "Une personne en plus"),
+      el("div", { class: "identite" }, champTexte(`prenom-${id}`, "Prénom", personne.prenom), champTexte(`nom-${id}`, "Nom", personne.nom)),
       el(
         "fieldset",
         { class: "question", "data-question": nomType },
         el("legend", {}, "Adulte ou enfant ?"),
         el("div", { class: "choix-groupe" }, optionType("adulte", "Adulte"), optionType("enfant", "Enfant")),
       ),
-      ...evenements.map((evenement) => questionPresence(personne, evenement)),
-      questionRegime(personne),
-      el("button", { type: "button", class: "bouton bouton--discret personne__retirer" }, "Retirer cette personne"),
+      ...config.evenements.map((evenement) => questionPresence(avecId, evenement)),
+      questionRegime(avecId),
+      premiere ? null : el("button", { type: "button", class: "bouton bouton--discret personne__retirer" }, "Retirer cette personne"),
     );
-    bloc.querySelector(".personne__retirer").addEventListener("click", () => {
+    bloc.querySelector(".personne__retirer")?.addEventListener("click", () => {
       bloc.remove();
       $("bouton-ajouter").focus();
     });
-    $("ajouts").append(bloc);
+    return bloc;
+  }
+
+  // Le formulaire, vide ou avec la réponse déjà envoyée depuis ce navigateur.
+  function afficherFormulaire(reponse) {
+    numeroPersonne = 0;
+    const personnes = reponse?.personnes?.length ? reponse.personnes : [{}];
+    $("personnes").replaceChildren(...personnes.map((personne, index) => blocPersonne(personne, index === 0)));
+    $("message").value = reponse?.message || "";
+  }
+
+  function ajouterPersonne() {
+    const bloc = blocPersonne({}, false);
+    $("personnes").append(bloc);
     bloc.querySelector("input").focus();
   }
 
   $("bouton-ajouter").addEventListener("click", ajouterPersonne);
+
+  // La réponse envoyée depuis ce navigateur : pour la modifier plus tard, et
+  // pour que le jeu sache au nom de qui inscrire une photo trouvée. Elle ne
+  // quitte pas ce navigateur, sauf vers le Google Sheet à l'envoi.
+  function reponseEnregistree() {
+    try {
+      return JSON.parse(window.localStorage.getItem("reponse") || "null");
+    } catch {
+      return null;
+    }
+  }
+
+  function enregistrerReponse(reponse) {
+    try {
+      window.localStorage.setItem("reponse", JSON.stringify(reponse));
+    } catch {
+      // Navigateur sans stockage : la réponse est envoyée, seule la reprise est perdue.
+    }
+  }
 
   // ---------- Le parcours en étapes ----------
 
@@ -386,24 +358,17 @@
     }
   });
 
-  function afficherFoyer(foyer) {
-    foyerCourant = foyer;
-    const evenements = evenementsDuFoyer(foyer);
-    const prenoms = foyer.personnes.map((personne) => personne.prenom).filter(Boolean);
-
-    numeroAjout = 0;
-    $("accueil").textContent = prenoms.length ? `Bonjour ${joindre(prenoms)} !` : "Bonjour !";
-    if (prenoms.length) $("enveloppe-pour").textContent = `Pour ${joindre(prenoms)}`;
+  function afficherInvitation() {
     afficherEnTete();
     afficherCompte();
-    afficherProgramme(evenements);
-    afficherInfos(evenements);
+    afficherProgramme(config.evenements);
+    afficherInfos(config.evenements);
     afficherLots();
-    afficherFormulaire(foyer);
 
-    const dejaRepondu = foyer.personnes.some((personne) => personne.reponse);
+    const dejaRepondu = reponseEnregistree();
+    afficherFormulaire(dejaRepondu);
     montrer("form-reponse", !dejaRepondu);
-    montrer("merci", dejaRepondu);
+    montrer("merci", Boolean(dejaRepondu));
     if (dejaRepondu) $("merci-texte").textContent = "Nous avons bien votre réponse. Vous pouvez la modifier.";
 
     allerA(ETAPES[0], { focus: false });
@@ -423,14 +388,13 @@
     $("champ-code").select();
   }
 
-  function accesAutorise(foyer) {
-    const prenoms = foyer.personnes.map((personne) => personne.prenom).filter(Boolean);
+  function accesAutorise() {
     const acces = $("acces");
     acces.classList.remove("acces--refus");
     acces.classList.add("acces--ok");
     $("acces-statut").textContent = "Accès autorisé";
     $("erreur-code").textContent = "";
-    $("acces-bienvenue").textContent = prenoms.length ? `Bienvenue ${joindre(prenoms)} !` : "Bienvenue !";
+    $("acces-bienvenue").textContent = "Bienvenue !";
     const passerALaLettre = () => {
       acces.hidden = true;
       montrer("ouverture", true);
@@ -444,24 +408,24 @@
     }
   }
 
-  async function ouvrir(code) {
-    codeCourant = code;
+  async function ouvrir(motDePasse) {
     const bouton = $("bouton-acces");
     bouton.disabled = true;
     bouton.textContent = "Vérification…";
     $("erreur-code").textContent = "";
     try {
-      const resultat = await chargerFoyer(code);
+      const resultat = await verifierMotDePasse(motDePasse);
       if (!resultat.ok) {
         accesRefuse(
-          resultat.erreur === "code_inconnu"
-            ? "Ce code ne correspond à aucune invitation. Vérifiez-le, ou écrivez-nous."
-            : "Impossible d'ouvrir cette invitation pour le moment. Réessayez dans un instant.",
+          resultat.erreur === "mot_de_passe"
+            ? "Ce n'est pas le bon mot de passe. Vérifiez-le, ou écrivez-nous."
+            : "Impossible d'ouvrir l'invitation pour le moment. Réessayez dans un instant.",
         );
         return;
       }
-      afficherFoyer(resultat.foyer);
-      accesAutorise(resultat.foyer);
+      motDePasseCourant = motDePasse;
+      afficherInvitation();
+      accesAutorise();
     } catch {
       accesRefuse("Impossible de joindre le serveur. Vérifiez votre connexion et réessayez.");
     } finally {
@@ -472,15 +436,12 @@
 
   $("form-code").addEventListener("submit", (evenement) => {
     evenement.preventDefault();
-    const code = normaliserCode($("champ-code").value);
-    if (!code) {
-      accesRefuse("Entrez le code reçu avec votre invitation.");
+    const motDePasse = normaliserMotDePasse($("champ-code").value);
+    if (!motDePasse) {
+      accesRefuse("Entrez le mot de passe reçu avec votre invitation.");
       return;
     }
-    const url = new URL(window.location.href);
-    url.searchParams.set("code", code);
-    window.history.replaceState(null, "", url.toString());
-    ouvrir(code);
+    ouvrir(motDePasse);
   });
 
   // ---------- Envoi de la réponse ----------
@@ -489,47 +450,33 @@
     const formulaire = $("form-reponse");
     const manquants = [];
     const valeur = (selecteur) => formulaire.querySelector(selecteur)?.value.trim() || "";
-    const lirePresences = (id, evenements) => {
-      const presences = {};
-      for (const idEvenement of evenements) {
-        const choix = formulaire.querySelector(`input[name="presence-${id}-${idEvenement}"]:checked`);
-        if (choix) presences[idEvenement] = choix.value;
-        else manquants.push(`[data-question="presence-${id}-${idEvenement}"] input`);
-      }
-      return presences;
-    };
-    const lireRegime = (id) => {
-      const regime = formulaire.querySelector(`#regime-${id}`).value;
-      return { regime, regimeDetail: regime.includes(PRECISER) ? valeur(`#regime-detail-${id}`) : "" };
-    };
-
-    const personnes = personnesAffichees(foyerCourant).map((personne) => ({
-      id: personne.id,
-      prenom: valeur(`#prenom-${personne.id}`),
-      nom: valeur(`#nom-${personne.id}`),
-      presences: lirePresences(personne.id, personne.evenements),
-      ...lireRegime(personne.id),
-    }));
-
-    const evenements = evenementsDuFoyer(foyerCourant).map((evenement) => evenement.id);
-    const ajouts = [...$("ajouts").querySelectorAll("[data-ajout]")].map((bloc) => {
-      const id = bloc.dataset.ajout;
+    const personnes = [...$("personnes").querySelectorAll("[data-personne]")].map((bloc) => {
+      const id = bloc.dataset.personne;
       const prenom = valeur(`#prenom-${id}`);
+      const nom = valeur(`#nom-${id}`);
       if (!prenom) manquants.push(`#prenom-${id}`);
+      if (!nom) manquants.push(`#nom-${id}`);
       const type = formulaire.querySelector(`input[name="type-${id}"]:checked`)?.value || "";
       if (!type) manquants.push(`[data-question="type-${id}"] input`);
-      return { prenom, nom: valeur(`#nom-${id}`), type, presences: lirePresences(id, evenements), ...lireRegime(id) };
+      const presences = {};
+      for (const evenement of config.evenements) {
+        const choix = formulaire.querySelector(`input[name="presence-${id}-${evenement.id}"]:checked`);
+        if (choix) presences[evenement.id] = choix.value;
+        else manquants.push(`[data-question="presence-${id}-${evenement.id}"] input`);
+      }
+      const regime = formulaire.querySelector(`#regime-${id}`).value;
+      return { prenom, nom, type, presences, regime, regimeDetail: regime.includes(PRECISER) ? valeur(`#regime-detail-${id}`) : "" };
     });
-    return { personnes, ajouts, manquants };
+    return { personnes, manquants };
   }
 
   $("form-reponse").addEventListener("submit", async (evenement) => {
     evenement.preventDefault();
     const erreur = $("erreur-reponse");
     erreur.textContent = "";
-    const { personnes, ajouts, manquants } = lireReponses();
+    const { personnes, manquants } = lireReponses();
     if (manquants.length) {
-      erreur.textContent = "Il manque une réponse : pour chacun, le prénom, s'il sera là, et adulte ou enfant pour les personnes en plus.";
+      erreur.textContent = "Il manque une réponse : pour chacun, le prénom, le nom, adulte ou enfant, et s'il sera là.";
       $("form-reponse").querySelector(manquants[0])?.focus();
       return;
     }
@@ -539,21 +486,14 @@
     bouton.textContent = "Envoi…";
     try {
       const message = $("message").value.trim();
-      const resultat = await envoyerReponse({ code: codeCourant, personnes, ajouts, message });
+      // Le même navigateur remplace sa réponse précédente (même « groupe ») ;
+      // les photos déjà trouvées au jeu sont inscrites au tirage avec elle.
+      const groupe = reponseEnregistree()?.groupe || "";
+      const resultat = await envoyerReponse({ mdp: motDePasseCourant, groupe, personnes, message, photos: [...photosTrouvees()] });
       if (!resultat.ok) throw new Error(resultat.erreur || "refus");
-      foyerCourant.personnes = foyerCourant.personnes.map((personne) => {
-        const reponse = personnes.find((r) => r.id === personne.id);
-        if (!reponse) return personne;
-        return { ...personne, prenom: reponse.prenom || personne.prenom, nom: reponse.nom || personne.nom, reponse };
-      });
-      // Les personnes ajoutées font maintenant partie du foyer : elles
-      // reviennent comme les autres si l'invité modifie sa réponse. Le
-      // script Google renvoie leurs identifiants ; la démo en invente.
-      const evenements = evenementsDuFoyer(foyerCourant).map((evenement) => evenement.id);
-      const ajoutes = resultat.ajouts || ajouts.map((ajout, index) => ({ ...ajout, id: `DEMO-${numeroAjout}-${index}` }));
-      ajoutes.forEach((ajout) => foyerCourant.personnes.push({ ...ajout, evenements, reponse: ajout }));
-      foyerCourant.message = message;
-      const viennent = [...personnes, ...ajouts].some((personne) => Object.values(personne.presences).includes("oui"));
+      enregistrerReponse({ groupe: resultat.groupe, personnes, message });
+      afficherLots();
+      const viennent = personnes.some((personne) => Object.values(personne.presences).includes("oui"));
       $("merci-texte").textContent =
         (viennent ? "Votre réponse est bien enregistrée. Nous avons hâte de vous voir !" : "Votre réponse est bien enregistrée. Vous nous manquerez.") +
         (modeDemo ? " (Démo : rien n'a été envoyé.)" : "");
@@ -569,7 +509,7 @@
   });
 
   $("bouton-modifier").addEventListener("click", () => {
-    afficherFormulaire(foyerCourant);
+    afficherFormulaire(reponseEnregistree());
     montrer("merci", false);
     montrer("form-reponse", true);
     $("personnes").querySelector("input, select")?.focus();
@@ -608,7 +548,7 @@
           el(
             "p",
             { class: trouvee ? "lot__statut lot__statut--trouvee" : "lot__statut" },
-            trouvee ? "✓ Vous participez" : `Photo n° ${lot.photo} à trouver`,
+            trouvee ? (reponseEnregistree() ? "✓ Vous participez" : "✓ Trouvée !") : `Photo n° ${lot.photo} à trouver`,
           ),
           // La photo 2 se cache dans le coin de la carte du lot n° 2.
           lot.photo === "2" ? cachette("2") : null,
@@ -638,12 +578,13 @@
     return trouvees.size;
   }
 
-  async function signalerTrouvaille(photo) {
-    if (modeDemo || !codeCourant || !foyerCourant) return null;
+  // Une photo trouvée après avoir répondu : inscrite tout de suite, au nom de
+  // la réponse de ce navigateur. Avant d'avoir répondu, elle part avec la réponse.
+  async function signalerTrouvaille(photo, groupe) {
     const reponse = await fetch(config.apiUrl, {
       method: "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({ action: "trouve", code: codeCourant, photo }),
+      body: JSON.stringify({ action: "trouve", mdp: motDePasseCourant, groupe, photo }),
     });
     if (!reponse.ok) throw new Error("HTTP " + reponse.status);
     return reponse.json();
@@ -751,7 +692,7 @@
     const trouvees = noterPhoto(photo);
     const lot = lotDeLaPhoto(photo);
     const annonceLot = lot ? `tirage au sort du lot n° ${lot.numero} : ${lot.nom}` : "tirage au sort";
-    if (foyerCourant) afficherLots();
+    afficherLots();
 
     elementAvantVictoire = document.activeElement;
     $("victoire-photo").src = config.jeu.photos[photo];
@@ -773,12 +714,13 @@
       $("victoire-texte").textContent = `Tu as trouvé une photo de Claire ! Tu participerais au ${annonceLot}. (Démo : rien n'est enregistré.)`;
       return;
     }
-    if (!foyerCourant) {
-      $("victoire-texte").textContent = `Tu as trouvé une photo de Claire ! Ouvre ton invitation avec ton code pour participer au ${annonceLot}.`;
+    const groupe = reponseEnregistree()?.groupe;
+    if (!groupe) {
+      $("victoire-texte").textContent = `Tu as trouvé une photo de Claire ! Envoie ta réponse à la fin du site pour participer au ${annonceLot}.`;
       return;
     }
     try {
-      const resultat = await signalerTrouvaille(photo);
+      const resultat = await signalerTrouvaille(photo, groupe);
       if (!resultat || !resultat.ok) throw new Error("refus");
       $("victoire-texte").textContent = resultat.deja
         ? `Déjà trouvée ! Tu es bien inscrit au ${annonceLot}.`
@@ -792,6 +734,9 @@
     montrer("victoire", false);
     window.cancelAnimationFrame(animation);
     particules = [];
+    // Efface aussi la dernière image : sinon les confettis restent figés à l'écran.
+    const canvas = $("feux");
+    canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
     if (elementAvantVictoire && typeof elementAvantVictoire.focus === "function") elementAvantVictoire.focus();
   }
 
@@ -848,9 +793,7 @@
   // Toucher le médaillon ouvre la porte en vitrail.
   $("medaillon").addEventListener("click", ouvrirLettre);
 
-  // Le lien personnel pré-remplit le code ; l'invité valide lui-même l'accès.
   montrer("acces-demo", modeDemo);
-  const codeUrl = normaliserCode(new URLSearchParams(window.location.search).get("code"));
-  if (codeUrl) $("champ-code").value = codeUrl;
+  if (modeDemo) $("acces-demo").textContent = `Mode démo : le mot de passe est ${config.motDePasseDemo}.`;
   $("champ-code").focus({ preventScroll: true });
 })();
