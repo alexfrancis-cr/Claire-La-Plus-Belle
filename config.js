@@ -7,7 +7,8 @@ window.MARIAGE = {
   // Affiché sous vos noms, sur le premier écran.
   // Sous vos noms, sur le premier écran.
   invitation: "ont la joie de vous inviter à leur mariage",
-  periode: ["Du vendredi 23 au dimanche 25 juillet 2027 · Angresse"],
+  // Une ligne par élément : la date sur une ligne, le lieu en dessous.
+  periode: ["Du vendredi 23 au dimanche 25 juillet 2027", "Angresse"],
   // Pour le compte à rebours.
   dateMariage: "2027-07-24",
   annee: "2027",
@@ -39,7 +40,6 @@ window.MARIAGE = {
       jour: "24",
       jourSemaine: "Samedi",
       mois: "juillet",
-      lieu: "Église de Hossegor",
       horaires: "",
       carte: "",
     },
@@ -61,17 +61,19 @@ window.MARIAGE = {
     {
       titre: "Hébergement",
       evenements: ["arrivee", "mariage", "brunch"],
-      texte: "Nos adresses à Angresse et aux alentours arrivent bientôt.",
+      texte: "Hossegor, Capbreton, Angresse, Seignosse",
     },
     {
       titre: "Tenue",
       evenements: ["arrivee", "mariage", "brunch"],
-      texte: "À venir.",
-    },
-    {
-      titre: "Liste de mariage",
-      evenements: ["arrivee", "mariage", "brunch"],
-      texte: "À venir.",
+      texte: "Un camaïeu d'été",
+      // Une fleur par couleur : clair, la couleur, foncé (le cœur de la rose).
+      couleurs: [
+        { nom: "Terracotta", teintes: ["#f1c3ab", "#d27d55", "#a9502e"] },
+        { nom: "Orange", teintes: ["#f9d2b2", "#e9975f", "#c46f35"] },
+        { nom: "Jaune", teintes: ["#fae7b8", "#eec36a", "#c99a3c"] },
+        { nom: "Lin", teintes: ["#fbf5ec", "#eadbc4", "#c9b495"] },
+      ],
     },
   ],
 
@@ -92,6 +94,9 @@ window.MARIAGE = {
       { photo: "3", nom: "Lot de 6 boosters Méga-Évolution Héros Transcendants", image: "jeu/lot-3.jpg" },
     ],
   },
+
+  // L'écran de remerciement, après la réponse. Laisser vide : pas de photo.
+  photoMerci: "merci/nous.jpg",
 
   regimes: [
     "Aucun",

@@ -13,6 +13,7 @@
   const sansAnimation = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   let codeCourant = "";
   let foyerCourant = null;
+  let numeroAjout = 0;
 
   // ---------- Utilitaires ----------
 
@@ -29,6 +30,20 @@
       noeud.append(typeof enfant === "string" ? document.createTextNode(enfant) : enfant);
     }
     return noeud;
+  }
+
+  // Les dessins (les fleurs de la tenue) : du SVG, qui a son propre espace de noms.
+  function fleur(teintes) {
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("class", "camaieu__fleur");
+    svg.setAttribute("aria-hidden", "true");
+    svg.style.setProperty("--rose-1", teintes[0]);
+    svg.style.setProperty("--rose-2", teintes[1]);
+    svg.style.setProperty("--rose-3", teintes[2]);
+    const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
+    use.setAttribute("href", "#rose");
+    svg.append(use);
+    return svg;
   }
 
   function montrer(id, visible) {
@@ -89,10 +104,9 @@
     return config.evenements.filter((evenement) => ids.has(evenement.id));
   }
 
-  function nomAffiche(personne, rang) {
+  function nomAffiche(personne) {
     if (personne.prenom) return [personne.prenom, personne.nom].filter(Boolean).join(" ");
-    if (personne.type === "enfant") return rang.enfants > 1 ? `Votre enfant n° ${rang.enfant}` : "Votre enfant";
-    return "Votre accompagnant·e";
+    return "Invité·e";
   }
 
   // Sous vos noms : la période du week-end (« Du vendredi 23 au dimanche 25 juillet 2027 »).
@@ -152,7 +166,18 @@
           "div",
           { class: "info" },
           el("h4", {}, info.titre),
-          el("p", {}, info.texte),
+          info.couleurs
+            ? el(
+                "div",
+                { class: "info__corps" },
+                el("p", {}, info.texte),
+                el(
+                  "ul",
+                  { class: "camaieu" },
+                  ...info.couleurs.map((couleur) => el("li", {}, fleur(couleur.teintes), couleur.nom)),
+                ),
+              )
+            : el("p", {}, info.texte),
         ),
       ),
     );
@@ -213,42 +238,96 @@
     );
   }
 
-  function afficherFormulaire(foyer) {
-    const enfants = foyer.personnes.filter((personne) => personne.type === "enfant" && !personne.prenom).length;
-    let rangEnfant = 0;
+  // Un +1 ou un enfant sans prénom n'est pas affiché : l'invité ajoute
+  // lui-même les personnes qui viennent avec lui, avec le bouton +.
+  function personnesAffichees(foyer) {
+    return foyer.personnes.filter((personne) => personne.prenom || personne.type === "adulte" || personne.reponse);
+  }
 
+  function champTexte(id, libelle, valeur, options = {}) {
+    return el(
+      "div",
+      { class: "champ" },
+      el("label", { for: id }, libelle),
+      el("input", {
+        id,
+        name: id,
+        type: "text",
+        maxlength: "60",
+        autocomplete: "off",
+        required: options.requis || false,
+        value: valeur || "",
+      }),
+    );
+  }
+
+  function afficherFormulaire(foyer) {
     $("personnes").replaceChildren(
-      ...foyer.personnes.map((personne) => {
-        if (personne.type === "enfant" && !personne.prenom) rangEnfant += 1;
-        const titre = nomAffiche(personne, { enfants, enfant: rangEnfant });
+      ...personnesAffichees(foyer).map((personne) => {
         const evenements = config.evenements.filter((evenement) => personne.evenements.includes(evenement.id));
         // Ce qu'on sait déjà est pré-rempli : l'invité confirme ou corrige.
-        const champIdentite = (cle, libelle) =>
-          el(
-            "div",
-            { class: "champ" },
-            el("label", { for: `${cle}-${personne.id}` }, libelle),
-            el("input", {
-              id: `${cle}-${personne.id}`,
-              name: `${cle}-${personne.id}`,
-              type: "text",
-              maxlength: "60",
-              autocomplete: "off",
-              value: personne[cle] || "",
-            }),
-          );
         return el(
           "fieldset",
           { class: "personne", "data-personne": personne.id },
-          el("legend", {}, titre),
-          el("div", { class: "identite" }, champIdentite("prenom", "Prénom"), champIdentite("nom", "Nom")),
+          el("legend", {}, nomAffiche(personne)),
+          el(
+            "div",
+            { class: "identite" },
+            champTexte(`prenom-${personne.id}`, "Prénom", personne.prenom),
+            champTexte(`nom-${personne.id}`, "Nom", personne.nom),
+          ),
           ...evenements.map((evenement) => questionPresence(personne, evenement)),
           questionRegime(personne),
         );
       }),
     );
+    $("ajouts").replaceChildren();
     $("message").value = foyer.message || "";
   }
+
+  // Une personne en plus : prénom, nom, adulte ou enfant, puis les mêmes
+  // questions que les autres. Autant qu'on veut ; « Retirer » l'enlève.
+  function ajouterPersonne() {
+    numeroAjout += 1;
+    const personne = { id: `ajout${numeroAjout}`, reponse: null };
+    const evenements = evenementsDuFoyer(foyerCourant);
+    const nomType = `type-${personne.id}`;
+    const optionType = (valeur, texte) =>
+      el(
+        "label",
+        { class: "choix" },
+        el("input", { type: "radio", name: nomType, value: valeur, required: true }),
+        el("span", {}, texte),
+      );
+    const bloc = el(
+      "fieldset",
+      { class: "personne personne--ajout", "data-ajout": personne.id },
+      el("legend", {}, "Une personne en plus"),
+      el(
+        "div",
+        { class: "identite" },
+        champTexte(`prenom-${personne.id}`, "Prénom", "", { requis: true }),
+        champTexte(`nom-${personne.id}`, "Nom", ""),
+      ),
+      el(
+        "fieldset",
+        { class: "question", "data-question": nomType },
+        el("legend", {}, "Adulte ou enfant ?"),
+        el("div", { class: "choix-groupe" }, optionType("adulte", "Adulte"), optionType("enfant", "Enfant")),
+      ),
+      ...evenements.map((evenement) => questionPresence(personne, evenement)),
+      questionRegime(personne),
+      el("button", { type: "button", class: "bouton bouton--discret personne__retirer" }, "Retirer cette personne"),
+    );
+    bloc.querySelector(".personne__retirer").addEventListener("click", () => {
+      bloc.remove();
+      $("bouton-ajouter").focus();
+    });
+    $("ajouts").append(bloc);
+    bloc.querySelector("input").focus();
+  }
+
+  $("bouton-ajouter").addEventListener("click", ajouterPersonne);
 
   // ---------- Le parcours en étapes ----------
 
@@ -312,6 +391,7 @@
     const evenements = evenementsDuFoyer(foyer);
     const prenoms = foyer.personnes.map((personne) => personne.prenom).filter(Boolean);
 
+    numeroAjout = 0;
     $("accueil").textContent = prenoms.length ? `Bonjour ${joindre(prenoms)} !` : "Bonjour !";
     if (prenoms.length) $("enveloppe-pour").textContent = `Pour ${joindre(prenoms)}`;
     afficherEnTete();
@@ -408,35 +488,49 @@
   function lireReponses() {
     const formulaire = $("form-reponse");
     const manquants = [];
-    const personnes = foyerCourant.personnes.map((personne) => {
+    const valeur = (selecteur) => formulaire.querySelector(selecteur)?.value.trim() || "";
+    const lirePresences = (id, evenements) => {
       const presences = {};
-      for (const idEvenement of personne.evenements) {
-        const choix = formulaire.querySelector(`input[name="presence-${personne.id}-${idEvenement}"]:checked`);
+      for (const idEvenement of evenements) {
+        const choix = formulaire.querySelector(`input[name="presence-${id}-${idEvenement}"]:checked`);
         if (choix) presences[idEvenement] = choix.value;
-        else manquants.push(`presence-${personne.id}-${idEvenement}`);
+        else manquants.push(`[data-question="presence-${id}-${idEvenement}"] input`);
       }
-      const regime = formulaire.querySelector(`#regime-${personne.id}`).value;
-      const detail = formulaire.querySelector(`#regime-detail-${personne.id}`);
-      return {
-        id: personne.id,
-        prenom: formulaire.querySelector(`#prenom-${personne.id}`).value.trim(),
-        nom: formulaire.querySelector(`#nom-${personne.id}`).value.trim(),
-        presences,
-        regime,
-        regimeDetail: regime.includes(PRECISER) ? detail.value.trim() : "",
-      };
+      return presences;
+    };
+    const lireRegime = (id) => {
+      const regime = formulaire.querySelector(`#regime-${id}`).value;
+      return { regime, regimeDetail: regime.includes(PRECISER) ? valeur(`#regime-detail-${id}`) : "" };
+    };
+
+    const personnes = personnesAffichees(foyerCourant).map((personne) => ({
+      id: personne.id,
+      prenom: valeur(`#prenom-${personne.id}`),
+      nom: valeur(`#nom-${personne.id}`),
+      presences: lirePresences(personne.id, personne.evenements),
+      ...lireRegime(personne.id),
+    }));
+
+    const evenements = evenementsDuFoyer(foyerCourant).map((evenement) => evenement.id);
+    const ajouts = [...$("ajouts").querySelectorAll("[data-ajout]")].map((bloc) => {
+      const id = bloc.dataset.ajout;
+      const prenom = valeur(`#prenom-${id}`);
+      if (!prenom) manquants.push(`#prenom-${id}`);
+      const type = formulaire.querySelector(`input[name="type-${id}"]:checked`)?.value || "";
+      if (!type) manquants.push(`[data-question="type-${id}"] input`);
+      return { prenom, nom: valeur(`#nom-${id}`), type, presences: lirePresences(id, evenements), ...lireRegime(id) };
     });
-    return { personnes, manquants };
+    return { personnes, ajouts, manquants };
   }
 
   $("form-reponse").addEventListener("submit", async (evenement) => {
     evenement.preventDefault();
     const erreur = $("erreur-reponse");
     erreur.textContent = "";
-    const { personnes, manquants } = lireReponses();
+    const { personnes, ajouts, manquants } = lireReponses();
     if (manquants.length) {
-      erreur.textContent = "Indiquez pour chacun s'il sera présent ou absent.";
-      document.querySelector(`[data-question="${manquants[0]}"] input`).focus();
+      erreur.textContent = "Il manque une réponse : pour chacun, le prénom, s'il sera là, et adulte ou enfant pour les personnes en plus.";
+      $("form-reponse").querySelector(manquants[0])?.focus();
       return;
     }
 
@@ -444,14 +538,22 @@
     bouton.disabled = true;
     bouton.textContent = "Envoi…";
     try {
-      const resultat = await envoyerReponse({ code: codeCourant, personnes, message: $("message").value.trim() });
+      const message = $("message").value.trim();
+      const resultat = await envoyerReponse({ code: codeCourant, personnes, ajouts, message });
       if (!resultat.ok) throw new Error(resultat.erreur || "refus");
       foyerCourant.personnes = foyerCourant.personnes.map((personne) => {
         const reponse = personnes.find((r) => r.id === personne.id);
+        if (!reponse) return personne;
         return { ...personne, prenom: reponse.prenom || personne.prenom, nom: reponse.nom || personne.nom, reponse };
       });
-      foyerCourant.message = $("message").value.trim();
-      const viennent = personnes.some((personne) => Object.values(personne.presences).includes("oui"));
+      // Les personnes ajoutées font maintenant partie du foyer : elles
+      // reviennent comme les autres si l'invité modifie sa réponse. Le
+      // script Google renvoie leurs identifiants ; la démo en invente.
+      const evenements = evenementsDuFoyer(foyerCourant).map((evenement) => evenement.id);
+      const ajoutes = resultat.ajouts || ajouts.map((ajout, index) => ({ ...ajout, id: `DEMO-${numeroAjout}-${index}` }));
+      ajoutes.forEach((ajout) => foyerCourant.personnes.push({ ...ajout, evenements, reponse: ajout }));
+      foyerCourant.message = message;
+      const viennent = [...personnes, ...ajouts].some((personne) => Object.values(personne.presences).includes("oui"));
       $("merci-texte").textContent =
         (viennent ? "Votre réponse est bien enregistrée. Nous avons hâte de vous voir !" : "Votre réponse est bien enregistrée. Vous nous manquerez.") +
         (modeDemo ? " (Démo : rien n'a été envoyé.)" : "");
@@ -549,7 +651,7 @@
 
   // Feu d'artifice et confettis sur un canvas plein écran, sans bibliothèque.
   // Les couleurs du vitrail : or, nacre, rose poudré, sauge.
-  const COULEURS = ["#b48a4f", "#e9c98f", "#d9b77a", "#e3bfb0", "#f6e4dc", "#cfd9c2", "#8fa27f", "#fbf7f1"];
+  const COULEURS = ["#c28a45", "#efc98a", "#e6b467", "#f0a88c", "#fbdccb", "#e3d9a6", "#b5a76a", "#fdf6ec"];
   let particules = [];
   let animation = 0;
 
@@ -707,6 +809,12 @@
   $("nom-mariee").textContent = config.mariee;
   $("nom-marie").textContent = config.marie;
   $("arche-invitation").textContent = config.invitation;
+  // La photo du merci : cachée si elle manque, plutôt qu'une image cassée.
+  if (config.photoMerci) {
+    $("merci-photo").addEventListener("error", () => montrer("merci-photo", false));
+    $("merci-photo").src = config.photoMerci;
+    montrer("merci-photo", true);
+  }
   montrer("bandeau-demo", modeDemo);
 
   // ---------- La lettre ----------

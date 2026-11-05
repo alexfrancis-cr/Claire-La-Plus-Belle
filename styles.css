@@ -1,15 +1,15 @@
 /* Bohème / champêtre : crème, sauge, terracotta. Les couleurs sont ici et nulle part ailleurs. */
 :root {
-  --creme: #f7f1e6;
-  --creme-fonce: #efe5d3;
-  --papier: #fffbf4;
-  --sauge: #7d8f6a;
-  --sauge-fonce: #55654a;
-  --terracotta: #c0714f;
-  --terracotta-fonce: #9c5233;
-  --encre: #3d3a33;
-  --encre-douce: #6b6458;
-  --trait: #d9ccb4;
+  --creme: #f9eedf;
+  --creme-fonce: #f2dfc6;
+  --papier: #fff8ef;
+  --sauge: #b5a76a;
+  --sauge-fonce: #6e5f2c;
+  --terracotta: #c4693f;
+  --terracotta-fonce: #9b4a2a;
+  --encre: #4a3324;
+  --encre-douce: #7b604c;
+  --trait: #ead6bb;
   --erreur: #a3402a;
 
   --police-titre: "Cormorant Garamond", Georgia, serif;
@@ -53,8 +53,8 @@ html {
 body {
   margin: 0;
   background: var(--creme);
-  background-image: radial-gradient(circle at 15% 10%, rgba(125, 143, 106, 0.1), transparent 40%),
-    radial-gradient(circle at 85% 90%, rgba(192, 113, 79, 0.08), transparent 45%);
+  background-image: radial-gradient(circle at 15% 10%, rgba(196, 105, 63, 0.1), transparent 40%),
+    radial-gradient(circle at 85% 90%, rgba(229, 143, 85, 0.08), transparent 45%);
   color: var(--encre);
   font-family: var(--police-texte);
   font-weight: 300;
@@ -150,7 +150,7 @@ body {
   border-radius: var(--rayon);
   padding: 2rem clamp(1.25rem, 5vw, 2.5rem);
   margin: 2.5rem 0;
-  box-shadow: 0 1px 0 rgba(61, 58, 51, 0.04);
+  box-shadow: 0 1px 0 rgba(74, 51, 36, 0.04);
 }
 
 
@@ -574,7 +574,7 @@ button:focus-visible,
   width: auto;
   max-width: 100%;
   object-fit: contain;
-  filter: drop-shadow(0 6px 10px rgba(61, 58, 51, 0.2));
+  filter: drop-shadow(0 6px 10px rgba(74, 51, 36, 0.2));
 }
 
 .lot__numero {
@@ -612,7 +612,7 @@ button:focus-visible,
   display: grid;
   place-items: center;
   padding: 1rem;
-  background: rgba(61, 58, 51, 0.55);
+  background: rgba(74, 51, 36, 0.55);
   backdrop-filter: blur(2px);
 }
 
@@ -672,7 +672,7 @@ button:focus-visible,
   height: 7.5rem;
   width: auto;
   margin: 0.5rem auto 0.75rem;
-  filter: drop-shadow(0 6px 10px rgba(61, 58, 51, 0.25));
+  filter: drop-shadow(0 6px 10px rgba(74, 51, 36, 0.25));
   animation: tourbillon 0.9s cubic-bezier(0.2, 1.4, 0.4, 1) 0.3s both;
 }
 
@@ -774,7 +774,7 @@ button:focus-visible,
   place-items: center;
   padding: 1rem;
   overflow-y: auto;
-  background: radial-gradient(circle at 50% 25%, #4d5c43, #232a20 72%);
+  background: radial-gradient(circle at 50% 25%, #9a5434, #4a2516 72%);
   color: var(--creme);
   transition: opacity 0.5s ease;
 }
@@ -790,7 +790,7 @@ button:focus-visible,
 .acces__carte {
   width: min(24rem, 100%);
   padding: 2.25rem 1.75rem 1.75rem;
-  border: 1px solid rgba(247, 241, 230, 0.18);
+  border: 1px solid rgba(253, 243, 230, 0.18);
   border-radius: var(--rayon);
   background: rgba(255, 255, 255, 0.04);
   box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.6);
@@ -820,7 +820,7 @@ button:focus-visible,
 }
 
 .acces__corps {
-  fill: rgba(247, 241, 230, 0.1);
+  fill: rgba(253, 243, 230, 0.1);
 }
 
 .acces__anse {
@@ -843,7 +843,7 @@ path.acces__serrure {
   font-weight: 500;
   letter-spacing: 0.35em;
   text-transform: uppercase;
-  color: #e6a77f;
+  color: #f2b48a;
   transition: color 0.3s;
 }
 
@@ -857,13 +857,13 @@ path.acces__serrure {
 .acces__texte {
   margin: 0;
   font-size: 0.9375rem;
-  color: rgba(247, 241, 230, 0.75);
+  color: rgba(253, 243, 230, 0.75);
 }
 
 .acces .acces__champ {
   margin: 1.5rem 0 0.75rem;
   padding: 0.8rem;
-  border: 1px solid rgba(247, 241, 230, 0.3);
+  border: 1px solid rgba(253, 243, 230, 0.3);
   border-radius: 12px;
   background: rgba(0, 0, 0, 0.25);
   color: var(--creme);
@@ -875,11 +875,11 @@ path.acces__serrure {
 }
 
 .acces .acces__champ::placeholder {
-  color: rgba(247, 241, 230, 0.3);
+  color: rgba(253, 243, 230, 0.3);
 }
 
 .acces .acces__champ:focus-visible {
-  outline: 2px solid #e6a77f;
+  outline: 2px solid #f2b48a;
   outline-offset: 2px;
 }
 
@@ -910,13 +910,13 @@ path.acces__serrure {
 .acces__demo {
   margin: 1rem 0 0;
   font-size: 0.8125rem;
-  color: rgba(247, 241, 230, 0.55);
+  color: rgba(253, 243, 230, 0.55);
 }
 
 /* Accès autorisé : le cadenas s'ouvre et passe au vert sauge. */
 .acces--ok .acces__cadenas,
 .acces--ok .acces__surtitre {
-  color: #b4cfa3;
+  color: #f3cf7a;
 }
 
 .acces--ok .acces__anse {
@@ -1192,7 +1192,7 @@ path.acces__serrure {
   margin: 0;
   padding: 0.15rem 0.55rem;
   border-radius: 999px;
-  background: linear-gradient(110deg, #c0714f 0%, #e6b422 35%, #fff3c4 50%, #e6b422 65%, #c0714f 100%);
+  background: linear-gradient(110deg, #c4693f 0%, #eec36a 35%, #fff1cf 50%, #eec36a 65%, #c4693f 100%);
   background-size: 250% 100%;
   color: #3d2a12;
   font-size: 0.625rem;
@@ -1222,9 +1222,9 @@ path.acces__serrure {
 body {
   background:
     radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.9), transparent 60%),
-    radial-gradient(ellipse at 15% 85%, rgba(227, 191, 176, 0.25), transparent 50%),
-    radial-gradient(ellipse at 90% 70%, rgba(207, 217, 194, 0.3), transparent 50%),
-    #f3eee6;
+    radial-gradient(ellipse at 15% 85%, rgba(240, 161, 132, 0.25), transparent 50%),
+    radial-gradient(ellipse at 90% 70%, rgba(238, 195, 106, 0.3), transparent 50%),
+    #f7ecdd;
   background-attachment: fixed;
   touch-action: manipulation; /* pas de délai ni de zoom au double toucher */
 }
@@ -1352,21 +1352,27 @@ body {
    Le vitrail : palette, porte, arche, programme, jeu
    ====================================================================== */
 :root {
-  --or: #b48a4f;
-  --or-clair: #e9c98f;
-  --nacre: #fbf7f1;
-  --olive: #3f4426;
-  --olive-clair: #545a35;
-  --rose-poudre: #e3bfb0;
+  --or: #c28a45;
+  --or-clair: #efc98a;
+  --nacre: #fdf6ec;
+  --olive: #7a3f22;
+  --olive-clair: #94522f;
+  --rose-poudre: #f0a88c;
   /* La palette d'origine devient celle du vitrail. */
-  --creme: #f3eee6;
-  --creme-fonce: #ebe2d5;
-  --papier: #fbf8f3;
-  --sauge: #8fa27f;
-  --sauge-fonce: #4b5536;
-  --terracotta: #b48a4f;
-  --terracotta-fonce: #8f6a35;
-  --trait: #e2d3bd;
+  --creme: #f7ecdd;
+  --creme-fonce: #f0dcc4;
+  --papier: #fdf7ef;
+  --sauge: #b5a76a;
+  --sauge-fonce: #6e5f2c;
+  --terracotta: #c4693f;
+  --terracotta-fonce: #9b4a2a;
+  --trait: #ecd6b8;
+  /* Les couleurs de l'été : la tenue en camaïeu, le jeu. */
+  --orange: #e58f55;
+  --pamplemousse: #f0a184;
+  --jaune: #eec36a;
+  --lin: #e6d5bc;
+  --abricot: #f7dcc2;
   --mosaique: url("vitrail/mosaique.svg");
 }
 
@@ -1426,7 +1432,7 @@ body.enveloppe-fermee {
     radial-gradient(ellipse at 30% 25%, rgba(255, 255, 255, 0.95), transparent 45%),
     radial-gradient(ellipse at 70% 75%, rgba(255, 255, 255, 0.6), transparent 40%),
     repeating-radial-gradient(ellipse at 50% 120%, rgba(255, 255, 255, 0) 0 14px, rgba(255, 255, 255, 0.35) 18px, rgba(255, 255, 255, 0) 24px),
-    linear-gradient(170deg, #f8f2ea, #ece1d5 55%, #f3e7dd);
+    linear-gradient(170deg, #fcf3e6, #f3dfc6 55%, #f8e6d2);
   box-shadow: 0 0 0 3px var(--or), 0 0 0 7px rgba(255, 255, 255, 0.55), 0 0 0 9px var(--or);
 }
 
@@ -1470,7 +1476,7 @@ body.enveloppe-fermee {
   padding: 0.35rem 1.1rem;
   border: 1px solid var(--or);
   border-radius: 999px;
-  background: rgba(251, 247, 241, 0.92);
+  background: rgba(253, 246, 236, 0.92);
   font-family: var(--police-script);
   font-size: 1.6rem;
   white-space: nowrap;
@@ -1489,7 +1495,7 @@ body.enveloppe-fermee {
   border: 0;
   background: none;
   transform: translate(-50%, -50%);
-  filter: drop-shadow(0 8px 14px rgba(61, 50, 30, 0.35));
+  filter: drop-shadow(0 8px 14px rgba(90, 50, 25, 0.35));
   transition: transform 0.35s ease, opacity 0.35s ease;
   animation: battement-medaillon 2.6s ease-in-out infinite;
 }
@@ -1531,7 +1537,7 @@ body.enveloppe-fermee {
   margin: 0;
   padding: 0.4rem 0.9rem;
   border-radius: 999px;
-  background: rgba(251, 247, 241, 0.88);
+  background: rgba(253, 246, 236, 0.88);
   font-size: 0.75rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -1595,7 +1601,7 @@ body.enveloppe-fermee {
     radial-gradient(ellipse at 30% 20%, rgba(255, 255, 255, 0.95), transparent 45%),
     radial-gradient(ellipse at 70% 80%, rgba(255, 255, 255, 0.7), transparent 40%),
     repeating-radial-gradient(ellipse at 50% 120%, rgba(255, 255, 255, 0) 0 18px, rgba(255, 255, 255, 0.3) 22px, rgba(255, 255, 255, 0) 30px),
-    linear-gradient(170deg, #faf5ee, #efe5da 55%, #f6ece3);
+    linear-gradient(170deg, #fdf6ec, #f5e4cc 55%, #f9ead8);
   box-shadow: 0 0 0 3px var(--or), 0 0 0 8px rgba(255, 255, 255, 0.6), 0 0 0 10px var(--or);
   text-align: center;
 }
@@ -1653,7 +1659,8 @@ body.enveloppe-fermee {
 }
 
 .ecran--arche .hero__dates {
-  font-size: clamp(0.95rem, 2.4vh, 1.2rem);
+  font-size: clamp(0.8rem, min(3.6vw, 2.4vh), 1.2rem);
+  white-space: nowrap;
   letter-spacing: 0.06em;
   color: var(--encre-douce);
 }
@@ -1695,7 +1702,7 @@ body.enveloppe-fermee {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(251, 247, 241, 0.75), rgba(251, 247, 241, 0.2) 60%);
+  background: linear-gradient(180deg, rgba(253, 246, 236, 0.75), rgba(253, 246, 236, 0.2) 60%);
 }
 
 .bandeau-vitrail__bouquet {
@@ -1785,24 +1792,24 @@ body.enveloppe-fermee {
   background: var(--or);
 }
 
-/* ---------- Écran 3 : le jeu, sur une arche olive ---------- */
+/* ---------- Écran 3 : le jeu, sur une arche abricot ---------- */
 .ecran--olive {
-  --rose-1: #f3e9da;
-  --rose-2: #ecdcc8;
-  --rose-3: #e2c9b0;
-  --feuille: #c9d3b6;
+  --rose-1: #fdf3e6;
+  --rose-2: #f6c7a6;
+  --rose-3: #e58f55;
+  --feuille: #d9cf98;
   width: min(100% - 1rem, 40rem);
   max-width: none;
   margin: 0 auto;
   border-radius: 999px 999px 0 0 / 18% 18% 0 0;
   background:
-    radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.08), transparent 60%),
-    var(--olive);
-  color: var(--creme);
+    radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.55), transparent 60%),
+    linear-gradient(180deg, #f9e3cb, var(--abricot) 55%, #f3cfae);
+  color: var(--encre);
 }
 
 .ecran--olive .titre-section {
-  color: var(--creme);
+  color: var(--terracotta-fonce);
   font-family: var(--police-script);
   font-weight: 400;
   font-size: clamp(2.2rem, 6vh, 3rem);
@@ -1813,11 +1820,11 @@ body.enveloppe-fermee {
 }
 
 .ecran--olive .ecran__texte {
-  color: rgba(243, 238, 230, 0.85);
+  color: var(--encre);
 }
 
 .ecran--olive .ecran__texte strong {
-  color: var(--or-clair);
+  color: var(--terracotta-fonce);
 }
 
 .ecran--olive .lot {
@@ -1840,12 +1847,12 @@ body.enveloppe-fermee {
 }
 
 .ecran--olive #passer-jeu {
-  background: var(--or);
-  color: var(--olive);
+  background: var(--terracotta);
+  color: var(--nacre);
 }
 
 .ecran--olive #passer-jeu:hover {
-  background: var(--or-clair);
+  background: var(--terracotta-fonce);
 }
 
 /* ---------- Les zones cachées du jeu ---------- */
@@ -1895,11 +1902,11 @@ body.enveloppe-fermee {
 }
 
 .acces {
-  background: radial-gradient(circle at 50% 25%, #575e37, #2b2f19 72%);
+  background: radial-gradient(circle at 50% 25%, #9a5434, #4a2516 72%);
 }
 
 .acces__carte {
-  border-color: rgba(233, 201, 143, 0.4);
+  border-color: rgba(239, 201, 138, 0.4);
 }
 
 .acces__surtitre {
@@ -2082,4 +2089,117 @@ body.enveloppe-fermee {
   .ecran .lot__nom {
     font-size: 0.75rem;
   }
+}
+
+/* ---------- La tenue : une fleur par couleur ---------- */
+.info__corps {
+  text-align: right;
+}
+
+.camaieu {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin: 0.3rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.camaieu li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+  color: var(--encre-douce);
+}
+
+.camaieu__fleur {
+  width: clamp(1.6rem, 4.5vh, 2.25rem);
+  height: clamp(1.6rem, 4.5vh, 2.25rem);
+}
+
+/* ---------- Vos infos : ajouter une personne ---------- */
+.ajouter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  width: 100%;
+  margin: 0 0 1.5rem;
+  padding: 0.85rem 1rem;
+  border: 1.5px dashed var(--terracotta);
+  border-radius: var(--rayon);
+  background: rgba(253, 246, 236, 0.7);
+  color: var(--terracotta-fonce);
+  font: inherit;
+  font-size: 1rem;
+  cursor: var(--curseur-clic);
+}
+
+.ajouter:hover {
+  background: var(--abricot);
+}
+
+.ajouter:focus-visible {
+  outline: 2px solid var(--terracotta-fonce);
+  outline-offset: 2px;
+}
+
+.ajouter__plus {
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  background: var(--terracotta);
+  color: var(--nacre);
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.personne--ajout > legend {
+  color: var(--terracotta-fonce);
+}
+
+.personne__retirer {
+  margin-top: 0.5rem;
+}
+
+/* ---------- Le merci : une photo de nous deux ---------- */
+.merci__photo {
+  display: block;
+  width: min(16rem, 80%);
+  aspect-ratio: 4 / 5;
+  margin: 0 auto 1rem;
+  object-fit: cover;
+  border-radius: 999px 999px var(--rayon) var(--rayon);
+  box-shadow: 0 0 0 3px var(--or), 0 0 0 7px rgba(255, 255, 255, 0.6), 0 0 0 9px var(--or);
+}
+
+.merci__photo[hidden] {
+  display: none;
+}
+
+/* ---------- Choix et boutons discrets, aux couleurs de l'été ---------- */
+.choix input:checked + span {
+  background: var(--terracotta);
+  border-color: var(--terracotta);
+  color: var(--nacre);
+}
+
+.choix input[value="non"]:checked + span {
+  background: var(--encre-douce);
+  border-color: var(--encre-douce);
+  color: var(--nacre);
+}
+
+.bouton.bouton--discret {
+  background: transparent;
+  color: var(--terracotta-fonce);
+  border: 1px solid var(--terracotta);
+}
+
+.bouton.bouton--discret:hover {
+  background: var(--abricot);
 }
